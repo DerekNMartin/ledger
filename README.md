@@ -1,5 +1,12 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Resources
+
+Collection of varous links and documentation of tools and libraries used:
+
+- [HeroUI](https://www.heroui.com/docs/guide/introduction) - UI library
+- [SheetJS](https://docs.sheetjs.com/docs/) - extracting useful data from almost any complex spreadsheet (csv/xls parsing)
+
 ## Getting Started
 
 First, run the development server:

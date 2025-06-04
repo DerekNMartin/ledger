@@ -9,12 +9,17 @@
 import * as XLSX from 'xlsx';
 
 export interface Transaction {
+  id: string;
+  account: string | null;
   date: number;
+  name: string | null;
   description: string;
   amount: number;
+  category: string | null;
+  isReoccuring: boolean;
 }
 
-function normalizeData(sheet: XLSX.WorkSheet) {
+function normalizeData(sheet: XLSX.WorkSheet, accountName?: string) {
   const dateColNames = ['date', 'transaction date'];
   const amountColNames = ['amount', 'cad$'];
   const descriptionColNames = ['description', 'description 1'];
@@ -33,9 +38,14 @@ function normalizeData(sheet: XLSX.WorkSheet) {
     ) as keyof typeof current;
 
     const obj = {
+      id: crypto.randomUUID(),
+      account: accountName || null,
       date: Number(current[dateKey]),
+      name: null,
       description: typeof current[descriptionKey] === 'string' ? current[descriptionKey] : '',
       amount: Number(current[amountKey]),
+      category: 'general',
+      isReoccuring: false,
     };
 
     items.push(obj);
@@ -57,13 +67,14 @@ async function fileToSheet(file: File) {
 export async function POST(request: Request) {
   const formData = await request.formData();
   const file = formData.get('file') as File;
+  const account = formData.get('account') as string;
 
   if (!file) {
     return Response.json({ error: 'No file uploaded' }, { status: 400 });
   }
 
   const sheet = await fileToSheet(file);
-  const json = normalizeData(sheet);
+  const json = normalizeData(sheet, account);
 
   return Response.json({ data: json });
 }

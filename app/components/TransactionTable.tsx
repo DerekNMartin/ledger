@@ -1,28 +1,102 @@
 import type { Transaction } from '../api/transactions/route';
+import type { SharedSelection } from '@heroui/system';
 
-export default function dataTable({ data }: { data?: Transaction[] }) {
+import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from '@heroui/table';
+import { Input, Switch } from '@heroui/react';
+import CategorySelect from './CategorySelect';
+import AccountSelect from './AccountSelect';
+
+export interface TransactionTableProps {
+  data?: Transaction[];
+  onUpdateData?: (rowIndex: number, rowData?: Partial<Transaction>) => void;
+}
+
+export default function dataTable({ data, onUpdateData }: TransactionTableProps) {
   if (!data) return;
-  const headers = ['date', 'description', 'amount'].map((header, index) => (
-    <th className="border border-neutral-700 capitalize p-2" key={index}>
+
+  function handleCategoryUpdate(selection: SharedSelection, rowIndex: number) {
+    if (onUpdateData) onUpdateData(rowIndex, { category: selection.currentKey });
+  }
+
+  function handleNameUpdate(value: string, rowIndex: number) {
+    if (onUpdateData) onUpdateData(rowIndex, { name: value });
+  }
+
+  function handleAccountUpdate(selection: SharedSelection, rowIndex: number) {
+    if (onUpdateData) onUpdateData(rowIndex, { account: selection.currentKey });
+  }
+
+  function handleReoccuringUpdate(isSelected: boolean, rowIndex: number) {
+    if (onUpdateData) onUpdateData(rowIndex, { isReoccuring: isSelected });
+  }
+
+  function formatCurrency(value: number) {
+    return new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(value);
+  }
+
+  const headers = [
+    'date',
+    'account',
+    'name',
+    'description',
+    'amount',
+    'category',
+    'reoccuring',
+  ].map((header, index) => (
+    <TableColumn
+      key={index}
+      className="capitalize"
+      align={['amount', 'category', 'reoccuring'].includes(header) ? 'end' : 'start'}
+    >
       {header}
-    </th>
+    </TableColumn>
   ));
+
   const rows = data.map((row, index) => {
     const date = new Date(row.date);
     return (
-      <tr key={index}>
-        <td className="border border-neutral-700 p-2">{date.toLocaleDateString()}</td>
-        <td className="border border-neutral-700 p-2">{row.description}</td>
-        <td className="border border-neutral-700 p-2">{row.amount}</td>
-      </tr>
+      <TableRow key={row.id}>
+        <TableCell>{date.toLocaleDateString()}</TableCell>
+        <TableCell>
+          <AccountSelect
+            selectedKeys={[row.account || '']}
+            onSelectionChange={(selection) => handleAccountUpdate(selection, index)}
+          />
+        </TableCell>
+        <TableCell>
+          <Input
+            className="min-w-44"
+            variant="bordered"
+            placeholder="Transaction name"
+            value={row.name || ''}
+            onValueChange={(value) => handleNameUpdate(value, index)}
+          />
+        </TableCell>
+        <TableCell>{row.description}</TableCell>
+        <TableCell>{formatCurrency(row.amount)}</TableCell>
+        <TableCell className="flex justify-end">
+          <CategorySelect
+            className="w-44"
+            selectedKeys={[row.category || '']}
+            onSelectionChange={(selection) => handleCategoryUpdate(selection, index)}
+          />
+        </TableCell>
+        <TableCell>
+          <Switch
+            color="primary"
+            isSelected={row.isReoccuring}
+            onValueChange={(isSelected) => handleReoccuringUpdate(isSelected, index)}
+            aria-label="Reoccuring payment"
+          />
+        </TableCell>
+      </TableRow>
     );
   });
+
   return (
-    <table className="border border-neutral-700">
-      <thead>
-        <tr>{headers}</tr>
-      </thead>
-      <tbody>{rows}</tbody>
-    </table>
+    <Table aria-label="Transaction Data Table" selectionMode="single">
+      <TableHeader>{headers}</TableHeader>
+      <TableBody>{rows}</TableBody>
+    </Table>
   );
 }

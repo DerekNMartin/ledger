@@ -1,9 +1,10 @@
 import type { Transaction } from '../api/transactions/route';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 import { Button } from '@heroui/button';
 import { Input } from '@heroui/input';
+import AccountSelect from './AccountSelect';
 
 export default function TransactionUpload({
   onUpload,
@@ -11,6 +12,7 @@ export default function TransactionUpload({
   onUpload: (data: Transaction[]) => void;
 }) {
   const fileInput = useRef<HTMLInputElement>(null);
+  const [selectedAccount, setSelectedAccount] = useState<string>();
 
   function getFormDataFile() {
     if (!fileInput?.current?.files) throw new Error('No files provided');
@@ -24,6 +26,7 @@ export default function TransactionUpload({
   async function uploadFile() {
     try {
       const formData = getFormDataFile();
+      if (selectedAccount) formData.append('account', selectedAccount);
       const response = await fetch('api/transactions', {
         method: 'POST',
         body: formData,
@@ -37,13 +40,20 @@ export default function TransactionUpload({
 
   return (
     <div className="flex gap-2">
+      <AccountSelect
+        className="w-56"
+        selectedKeys={[selectedAccount || '']}
+        onSelectionChange={(selection) => setSelectedAccount(selection.currentKey)}
+      />
       <Input
         ref={fileInput}
         type="file"
         accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         placeholder="Upload transaction CSV file"
       />
-      <Button onPress={uploadFile}>Upload File</Button>
+      <Button onPress={uploadFile} color="primary">
+        Upload File
+      </Button>
     </div>
   );
 }

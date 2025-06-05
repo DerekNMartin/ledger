@@ -7,13 +7,6 @@ import { Button } from '@heroui/react';
 export default function TransactionNew() {
   // Fetch Transactions
 
-  // function updateData(rowIndex: number, dataItem?: Partial<Transaction>) {
-  //   if (!transactionData?.length) return;
-  //   setTransactionData(
-  //     transactionData.map((row, index) => (index === rowIndex ? { ...row, ...dataItem } : row))
-  //   );
-  // }
-
   return (
     <main className="flex flex-col gap-8 p-6">
       <section className="flex justify-end">

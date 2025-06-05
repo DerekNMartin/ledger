@@ -5,7 +5,7 @@ export const categories = [
   { key: 'bills', label: 'Bills' },
   { key: 'cash', label: 'Cash' },
   { key: 'charity', label: 'Charity' },
-  { key: 'eating', label: 'Eating Out' },
+  { key: 'take_out', label: 'Eating Out' },
   { key: 'education', label: 'Education' },
   { key: 'entertainment', label: 'Entertainment' },
   { key: 'excluded', label: 'Excluded' },
@@ -16,7 +16,7 @@ export const categories = [
   { key: 'income', label: 'Income' },
   { key: 'investments', label: 'Investments' },
   { key: 'personal', label: 'Personal Care' },
-  { key: 'shoping', label: 'Shopping' },
+  { key: 'shopping', label: 'Shopping' },
   { key: 'transport', label: 'Transport' },
 ];
 

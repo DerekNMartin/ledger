@@ -1,10 +1,11 @@
-import type { Transaction } from '../api/transactions/route';
+import type { Transaction } from '@/api/transactions/upload/route';
 
 import { useRef, useState } from 'react';
 
 import { Button } from '@heroui/button';
 import { Input } from '@heroui/input';
-import AccountSelect from './AccountSelect';
+
+import AccountSelect from '@/components/AccountSelect';
 
 export default function TransactionUpload({
   onUpload,
@@ -27,7 +28,7 @@ export default function TransactionUpload({
     try {
       const formData = getFormDataFile();
       if (selectedAccount) formData.append('account', selectedAccount);
-      const response = await fetch('api/transactions', {
+      const response = await fetch('/api/transactions/upload', {
         method: 'POST',
         body: formData,
       });

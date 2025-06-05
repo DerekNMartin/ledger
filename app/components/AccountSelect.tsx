@@ -11,7 +11,12 @@ export const accounts = [
 
 export default function AccountSelect(props: Omit<SelectProps, 'children'>) {
   return (
-    <Select {...props} aria-label="Account Selection" variant="bordered">
+    <Select
+      {...props}
+      aria-label="Account Selection"
+      variant="bordered"
+      placeholder="Choose an account..."
+    >
       {accounts.map(({ key, label }) => (
         <SelectItem key={key}>{label}</SelectItem>
       ))}

@@ -1,10 +1,10 @@
-import type { Transaction } from '../api/transactions/route';
-import type { SharedSelection } from '@heroui/system';
+import type { Transaction } from '@/api/transactions/upload/route';
 
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from '@heroui/table';
 import { Input, Switch } from '@heroui/react';
-import CategorySelect from './CategorySelect';
-import AccountSelect from './AccountSelect';
+
+import CategorySelect from '@/components/CategorySelect';
+import AccountSelect from '@/components/AccountSelect';
 
 export interface TransactionTableProps {
   data?: Transaction[];
@@ -14,20 +14,8 @@ export interface TransactionTableProps {
 export default function dataTable({ data, onUpdateData }: TransactionTableProps) {
   if (!data) return;
 
-  function handleCategoryUpdate(selection: SharedSelection, rowIndex: number) {
-    if (onUpdateData) onUpdateData(rowIndex, { category: selection.currentKey });
-  }
-
-  function handleNameUpdate(value: string, rowIndex: number) {
-    if (onUpdateData) onUpdateData(rowIndex, { name: value });
-  }
-
-  function handleAccountUpdate(selection: SharedSelection, rowIndex: number) {
-    if (onUpdateData) onUpdateData(rowIndex, { account: selection.currentKey });
-  }
-
-  function handleReoccuringUpdate(isSelected: boolean, rowIndex: number) {
-    if (onUpdateData) onUpdateData(rowIndex, { isReoccuring: isSelected });
+  function handleUpdateData(rowIndex: number, rowData?: Partial<Transaction>) {
+    if (onUpdateData) onUpdateData(rowIndex, rowData);
   }
 
   function formatCurrency(value: number) {
@@ -60,7 +48,9 @@ export default function dataTable({ data, onUpdateData }: TransactionTableProps)
         <TableCell>
           <AccountSelect
             selectedKeys={[row.account || '']}
-            onSelectionChange={(selection) => handleAccountUpdate(selection, index)}
+            onSelectionChange={(selection) =>
+              handleUpdateData(index, { account: selection.currentKey })
+            }
           />
         </TableCell>
         <TableCell>
@@ -69,7 +59,7 @@ export default function dataTable({ data, onUpdateData }: TransactionTableProps)
             variant="bordered"
             placeholder="Transaction name"
             value={row.name || ''}
-            onValueChange={(value) => handleNameUpdate(value, index)}
+            onValueChange={(value) => handleUpdateData(index, { name: value })}
           />
         </TableCell>
         <TableCell>{row.description}</TableCell>
@@ -78,14 +68,16 @@ export default function dataTable({ data, onUpdateData }: TransactionTableProps)
           <CategorySelect
             className="w-44"
             selectedKeys={[row.category || '']}
-            onSelectionChange={(selection) => handleCategoryUpdate(selection, index)}
+            onSelectionChange={(selection) =>
+              handleUpdateData(index, { category: selection.currentKey })
+            }
           />
         </TableCell>
         <TableCell>
           <Switch
             color="primary"
             isSelected={row.isReoccuring}
-            onValueChange={(isSelected) => handleReoccuringUpdate(isSelected, index)}
+            onValueChange={(isSelected) => handleUpdateData(index, { isReoccuring: isSelected })}
             aria-label="Reoccuring payment"
           />
         </TableCell>

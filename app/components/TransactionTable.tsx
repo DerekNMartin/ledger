@@ -5,13 +5,17 @@ import { Input, Switch } from '@heroui/react';
 
 import CategorySelect from '@/components/CategorySelect';
 import AccountSelect from '@/components/AccountSelect';
+import { useState } from 'react';
 
 export interface TransactionTableProps {
   data?: Transaction[];
+  editable?: boolean;
   onUpdateData?: (rowIndex: number, rowData?: Partial<Transaction>) => void;
 }
 
-export default function dataTable({ data, onUpdateData }: TransactionTableProps) {
+export default function TransactionTable(
+  { data, editable, onUpdateData }: TransactionTableProps = { editable: false }
+) {
   if (!data) return;
 
   function handleUpdateData(rowIndex: number, rowData?: Partial<Transaction>) {
@@ -47,46 +51,61 @@ export default function dataTable({ data, onUpdateData }: TransactionTableProps)
         <TableCell>{date.toLocaleDateString()}</TableCell>
         <TableCell>
           <AccountSelect
-            selectedKeys={[row.account || '']}
+            disabled={!editable}
+            selectedKeys={[row.account_id?.toString() || '']}
             onSelectionChange={(selection) =>
-              handleUpdateData(index, { account: selection.currentKey })
+              handleUpdateData(index, { account_id: Number(selection.currentKey) })
             }
           />
         </TableCell>
         <TableCell>
-          <Input
-            className="min-w-44"
-            variant="bordered"
-            placeholder="Transaction name"
-            value={row.name || ''}
-            onValueChange={(value) => handleUpdateData(index, { name: value })}
-          />
+          {editable ? (
+            <Input
+              className="min-w-44"
+              variant="bordered"
+              placeholder="Transaction name"
+              value={row.name || ''}
+              onValueChange={(value) => handleUpdateData(index, { name: value })}
+            />
+          ) : (
+            row.name
+          )}
         </TableCell>
         <TableCell>{row.description}</TableCell>
         <TableCell>{formatCurrency(row.amount)}</TableCell>
         <TableCell className="flex justify-end">
-          <CategorySelect
-            className="w-44"
-            selectedKeys={[row.category || '']}
-            onSelectionChange={(selection) =>
-              handleUpdateData(index, { category: selection.currentKey })
-            }
-          />
+          {editable ? (
+            <CategorySelect
+              className="w-44"
+              selectedKeys={[row.category || '']}
+              onSelectionChange={(selection) =>
+                handleUpdateData(index, { category: selection.currentKey })
+              }
+            />
+          ) : (
+            row.category
+          )}
         </TableCell>
         <TableCell>
-          <Switch
-            color="primary"
-            isSelected={row.isReoccuring}
-            onValueChange={(isSelected) => handleUpdateData(index, { isReoccuring: isSelected })}
-            aria-label="Reoccuring payment"
-          />
+          {editable ? (
+            <Switch
+              color="primary"
+              isSelected={row.is_reoccuring}
+              onValueChange={(isSelected) => handleUpdateData(index, { is_reoccuring: isSelected })}
+              aria-label="Reoccuring payment"
+            />
+          ) : row.is_reoccuring ? (
+            'Yes'
+          ) : (
+            'No'
+          )}
         </TableCell>
       </TableRow>
     );
   });
 
   return (
-    <Table aria-label="Transaction Data Table" selectionMode="single">
+    <Table aria-label="Transaction Data Table">
       <TableHeader>{headers}</TableHeader>
       <TableBody>{rows}</TableBody>
     </Table>

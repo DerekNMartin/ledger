@@ -1,15 +1,10 @@
 import { Select, SelectItem } from '@heroui/react';
 import type { SelectProps } from '@heroui/react';
-
-export const accounts = [
-  { key: 'rbc-cc-visa', label: 'RBC Visa Credit Card' },
-  { key: 'rbc-chequing', label: 'RBC Chequing' },
-  { key: 'amex-cc-personal', label: 'AMEX Personal Credit Card' },
-  { key: 'wealthsimple-cash', label: 'Wealthsimple Cash Account' },
-  { key: 'scotia-cc-shared', label: 'Scotiabank Shared Credit Card' },
-];
+import { useAccounts } from '@/hooks/useAccounts';
 
 export default function AccountSelect(props: Omit<SelectProps, 'children'>) {
+  const { accounts } = useAccounts();
+
   return (
     <Select
       {...props}
@@ -17,9 +12,7 @@ export default function AccountSelect(props: Omit<SelectProps, 'children'>) {
       variant="bordered"
       placeholder="Choose an account..."
     >
-      {accounts.map(({ key, label }) => (
-        <SelectItem key={key}>{label}</SelectItem>
-      ))}
+      {accounts?.map(({ id, name }) => <SelectItem key={id}>{name}</SelectItem>) || []}
     </Select>
   );
 }

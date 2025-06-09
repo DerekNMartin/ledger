@@ -7,26 +7,19 @@
  */
 
 import * as XLSX from 'xlsx';
+import type { Database } from '@/lib/supabase/database.types';
 
-export interface Transaction {
-  id: string;
-  account: string | null;
-  date: number;
-  name: string | null;
-  description: string;
-  amount: number;
-  category: string | null;
-  isReoccuring: boolean;
-}
+export type Transaction = Database['public']['Tables']['Transactions']['Insert']
+export type TransactionInsert = Database['public']['Tables']['Transactions']['Insert']
 
-function normalizeData(sheet: XLSX.WorkSheet, accountName?: string) {
+function normalizeData(sheet: XLSX.WorkSheet, accountId?: string) {
   const dateColNames = ['date', 'transaction date'];
   const amountColNames = ['amount', 'cad$'];
   const descriptionColNames = ['description', 'description 1'];
 
   const json = XLSX.utils.sheet_to_json<Record<string, string | number>>(sheet);
 
-  const data = json.reduce<Transaction[]>((items, current) => {
+  const data = json.reduce<TransactionInsert[]>((items, current) => {
     const dateKey = Object.keys(current).find((key) =>
       dateColNames.includes(key.toLowerCase())
     ) as keyof typeof current;
@@ -38,14 +31,13 @@ function normalizeData(sheet: XLSX.WorkSheet, accountName?: string) {
     ) as keyof typeof current;
 
     const obj = {
-      id: crypto.randomUUID(),
-      account: accountName || null,
-      date: Number(current[dateKey]),
+      account_id: Number(accountId) || null,
+      date: new Date(current[dateKey]).toISOString(),
       name: null,
       description: typeof current[descriptionKey] === 'string' ? current[descriptionKey] : '',
       amount: Number(current[amountKey]),
       category: 'general',
-      isReoccuring: false,
+      is_reoccuring: false,
     };
 
     items.push(obj);

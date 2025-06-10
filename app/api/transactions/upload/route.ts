@@ -5,55 +5,87 @@
  * Scotiabank - filter | date | description | sub-description | status | type of transaction | amount
  * date | description | amount
  */
-
-import * as XLSX from 'xlsx';
 import type { Database } from '@/lib/supabase/database.types';
 
+import { fileToJson } from '@/lib/xlsx/utils';
+import { createClient } from '@/lib/supabase/server';
+
+type TransactionTemplate = Database['public']['Tables']['Transaction_Templates']['Row']
 export type Transaction = Database['public']['Tables']['Transactions']['Insert']
 export type TransactionInsert = Database['public']['Tables']['Transactions']['Insert']
 
-function normalizeData(sheet: XLSX.WorkSheet, accountId?: string) {
-  const dateColNames = ['date', 'transaction date'];
-  const amountColNames = ['amount', 'cad$'];
-  const descriptionColNames = ['description', 'description 1'];
+function normalizeDescription(description: any) {
+  const VENDOR_ALIASES = {
+    amazon: 'amazon',
+    dazn: 'dazn',
+    youtube: 'youtube',
+    mcdonalds: 'mcdonalds',
+    uber: 'uber',
+    lyft: 'lyft',
+    msbill: 'microsoft',
+    'joes nf': 'no frills',
+  };
 
-  const json = XLSX.utils.sheet_to_json<Record<string, string | number>>(sheet);
+  const cleaned = description
+    .toLowerCase()
+    .replace(/https?:\/\//gi, '')
+    .replace(/www\./gi, '') // remove www. (case insensitive)
+    .replace(/\.(ca|com|co|c|ub)/gi, '') // remove website TLDs (case insensitive)
+    .replace(/\d+/g, '') // remove numbers
+    .replace(/[^\w\s]/g, '') // remove special chars
+    .replace(/\s+/g, ' ') // remove whitespace
+    .trim()
 
-  const data = json.reduce<TransactionInsert[]>((items, current) => {
-    const dateKey = Object.keys(current).find((key) =>
-      dateColNames.includes(key.toLowerCase())
-    ) as keyof typeof current;
-    const amountKey = Object.keys(current).find((key) =>
-      amountColNames.includes(key.toLowerCase())
-    ) as keyof typeof current;
-    const descriptionKey = Object.keys(current).find((key) =>
-      descriptionColNames.includes(key.toLowerCase())
-    ) as keyof typeof current;
+    const matchingAliasKey = Object.keys(VENDOR_ALIASES).find((key) => cleaned.includes(key)) as keyof typeof VENDOR_ALIASES
+    const matchingAlias = VENDOR_ALIASES[matchingAliasKey]
 
-    const obj = {
-      account_id: Number(accountId) || null,
-      date: new Date(current[dateKey]).toISOString(),
-      name: null,
-      description: typeof current[descriptionKey] === 'string' ? current[descriptionKey] : '',
-      amount: Number(current[amountKey]),
-      category: 'general',
-      is_reoccuring: false,
-    };
-
-    items.push(obj);
-    return items;
-  }, []);
-  return data;
+  return matchingAlias || cleaned;
 }
 
-async function fileToSheet(file: File) {
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
+async function valueFromTemplate(key: keyof TransactionTemplate, description: string) {
+  const supabase = await createClient();
+  const { data: matchingTemplate } = await supabase
+    .from('Transaction_Templates')
+    .select('*')
+    .eq('description', description)
+    .single();
+  if (!matchingTemplate) return
+  return matchingTemplate[key]
+}
 
-  const workbook = await XLSX.read(buffer, { cellDates: true });
-  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+function findKey(keyType: 'date' | 'amount' | 'description', rowItem: Record<string, any>) {
+  const colHeaderVariants = {
+    date: ['date', 'transaction date'],
+    amount: ['amount', 'cad$'],
+    description: ['description', 'description 1']
+  }
+  return Object.keys(rowItem).find((key) =>
+    colHeaderVariants[keyType].includes(key.toLowerCase())
+  ) as keyof typeof rowItem;
+}
 
-  return sheet;
+function createTransactions(json: Record<string, any>[], accountId?: string) {
+  const newTransactions = json.reduce<TransactionInsert[]>((transactions, tableRow) => {
+    const dateKey = findKey('date', tableRow);
+    const amountKey = findKey('amount', tableRow);
+    const descriptionKey = findKey('description', tableRow)
+
+    const description = normalizeDescription(tableRow[descriptionKey])
+
+    const newTransaction = {
+      description,
+      name: null,
+      category: 'general',
+      is_reoccuring: false,
+      account_id: Number(accountId) || null,
+      amount: Number(tableRow[amountKey]),
+      date: new Date(tableRow[dateKey]).toISOString(),
+    };
+
+    transactions.push(newTransaction);
+    return transactions;
+  }, []);
+  return newTransactions;
 }
 
 export async function POST(request: Request) {
@@ -65,8 +97,20 @@ export async function POST(request: Request) {
     return Response.json({ error: 'No file uploaded' }, { status: 400 });
   }
 
-  const sheet = await fileToSheet(file);
-  const json = normalizeData(sheet, account);
+  const json = await fileToJson<Record<string, any>>(file);
+  const newTransactions = createTransactions(json, account);
 
-  return Response.json({ data: json });
+  const templateMatchedTransactions = await Promise.all(newTransactions.map(async (transaction) => {
+    const name = await valueFromTemplate('name', transaction.description)
+    const category = await valueFromTemplate('category', transaction.description)
+    const isReoccuring = await valueFromTemplate('is_reoccuring', transaction.description) ?? false
+    return {
+      ...transaction,
+      is_reoccuring: Boolean(isReoccuring),
+      name: name && typeof name === 'string' ? name : transaction.name,
+      category: category && typeof category === 'string' ? category : transaction.category
+    }
+  }))
+
+  return Response.json({ data: templateMatchedTransactions });
 }

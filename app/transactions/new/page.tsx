@@ -7,8 +7,8 @@ import { useRouter } from 'next/navigation';
 
 import { Button } from '@heroui/react';
 
-import TransactionTable from '@/components/TransactionTable';
-import TransactionUpload from '@/components/TransactionUpload';
+import TransactionTable from '@/transactions/TransactionTable';
+import TransactionUpload from '@/transactions/new/TransactionUpload';
 
 export default function TransactionsNew() {
   const router = useRouter();
@@ -37,6 +37,9 @@ export default function TransactionsNew() {
 
   return (
     <main className="flex flex-col gap-8 p-6">
+      <section className="flex justify-between items-center">
+        <h2 className="font-bold text-2xl">Upload Transactions</h2>
+      </section>
       <TransactionUpload onUpload={setTransactionData} />
       <TransactionTable data={transactionData} onUpdateData={updateData} editable />
       <footer className="w-full flex justify-end">

@@ -18,7 +18,7 @@ export function useAccounts() {
       try {
         if (!fetching) {
           setIsLoading(true);
-          fetching = fetch('/api/accounts')
+          fetching = fetch('/api/accounts', { cache: 'force-cache' })
             .then((res) => res.json())
             .then((data: Account[]) => {
               cachedAccounts = data;

@@ -3,8 +3,8 @@ import type { Transaction } from '@/api/transactions/upload/route';
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from '@heroui/table';
 import { Input, Switch } from '@heroui/react';
 
-import CategorySelect from '@/components/CategorySelect';
-import AccountSelect from '@/components/AccountSelect';
+import CategorySelect from '@/lib/components/CategorySelect';
+import AccountSelect from '@/lib/components/AccountSelect';
 import { useState } from 'react';
 
 export interface TransactionTableProps {

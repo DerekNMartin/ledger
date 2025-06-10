@@ -5,7 +5,7 @@ import { useRef, useState } from 'react';
 import { Button } from '@heroui/button';
 import { Input } from '@heroui/input';
 
-import AccountSelect from '@/components/AccountSelect';
+import AccountSelect from '@/lib/components/AccountSelect';
 
 export default function TransactionUpload({
   onUpload,

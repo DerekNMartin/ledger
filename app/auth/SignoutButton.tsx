@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@heroui/react';
-import { supabaseContext } from '@/context/AuthContext';
+import { supabaseContext } from '@/auth/context/AuthContext';
 import { useRouter } from 'next/navigation';
 
 export default function SignoutButton() {

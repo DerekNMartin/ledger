@@ -4,7 +4,7 @@ import type { Transaction } from '@/api/transactions/upload/route';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@heroui/react';
-import TransactionTable from '@/components/TransactionTable';
+import TransactionTable from '@/transactions/TransactionTable';
 
 export default function TransactionNew() {
   const [transactionData, setTransactionData] = useState<Transaction[]>();

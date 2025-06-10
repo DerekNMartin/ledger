@@ -1,6 +1,6 @@
 'use client';
 
-import { supabaseContext } from '@/context/AuthContext';
+import { supabaseContext } from '@/auth/context/AuthContext';
 import { Button, Input } from '@heroui/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';

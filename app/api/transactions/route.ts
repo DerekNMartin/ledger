@@ -24,10 +24,14 @@ export async function POST(request: Request) {
 
   const body = await request.json();
   const transactions = body.transactions as Transaction[]
-
+  // remove temporary ID added in /transactions/upload
+  const cleanedTransactions = transactions.map((transaction) => {
+    const {id, ...rest} = transaction
+    return rest
+  })
   const { error } = await supabase
   .from('Transactions')
-  .insert(transactions)
+  .insert(cleanedTransactions)
   .select()
 
   const templates: TransactionTemplateInsert[] = transactions.map((transaction) => ({

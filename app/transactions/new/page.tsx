@@ -15,10 +15,10 @@ export default function TransactionsNew() {
 
   const [transactionData, setTransactionData] = useState<Transaction[]>();
 
-  function updateData(rowIndex: number, dataItem?: Partial<Transaction>) {
+  function updateData(rowId: string, dataItem?: Partial<Transaction>) {
     if (!transactionData?.length) return;
     setTransactionData((prev) => {
-      return prev?.map((row, index) => (index === rowIndex ? { ...row, ...dataItem } : row));
+      return prev?.map((row) => (row.id === rowId ? { ...row, ...dataItem } : row));
     });
   }
 
@@ -41,7 +41,7 @@ export default function TransactionsNew() {
         <h2 className="font-bold text-2xl">Upload Transactions</h2>
       </section>
       <TransactionUpload onUpload={setTransactionData} />
-      <TransactionTable data={transactionData} onUpdateData={updateData} editable />
+      <TransactionTable transactions={transactionData} onUpdateData={updateData} editable />
       <footer className="w-full flex justify-end">
         {transactionData && (
           <Button color="primary" onPress={handleSaveTransactions}>

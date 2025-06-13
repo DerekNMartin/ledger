@@ -24,6 +24,7 @@ function normalizeDescription(description: any) {
     lyft: 'lyft',
     msbill: 'microsoft',
     'joes nf': 'no frills',
+    loblaw: 'loblaws'
   };
 
   const cleaned = description
@@ -73,6 +74,7 @@ function createTransactions(json: Record<string, any>[], accountId?: string) {
     const description = normalizeDescription(tableRow[descriptionKey])
 
     const newTransaction = {
+      id: crypto.randomUUID(),
       description,
       name: null,
       category: 'general',

@@ -31,7 +31,7 @@ export default function TransactionNew() {
           <Button color="primary">Import Transactions</Button>
         </Link>
       </section>
-      <TransactionTable data={transactionData} />
+      <TransactionTable transactions={transactionData} />
     </main>
   );
 }

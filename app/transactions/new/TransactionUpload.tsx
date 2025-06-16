@@ -24,8 +24,10 @@ export default function TransactionUpload({
     return formData;
   }
 
+  const [isLoading, setIsLoading] = useState(false);
   async function uploadFile() {
     try {
+      setIsLoading(true);
       const formData = getFormDataFile();
       if (selectedAccount) formData.append('account', selectedAccount);
       const response = await fetch('/api/transactions/upload', {
@@ -36,6 +38,8 @@ export default function TransactionUpload({
       onUpload(data.data);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -52,7 +56,7 @@ export default function TransactionUpload({
         accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         placeholder="Upload transaction CSV file"
       />
-      <Button onPress={uploadFile} color="primary">
+      <Button onPress={uploadFile} color="primary" isLoading={isLoading}>
         Upload File
       </Button>
     </div>

@@ -58,7 +58,12 @@ export default function TransactionTable(
   );
 
   return (
-    <Table aria-label="Transaction Data Table" bottomContent={TablePagination}>
+    <Table
+      aria-label="Transaction Data Table"
+      bottomContent={TablePagination}
+      shadow="none"
+      className="border border-neutral-200 rounded-xl"
+    >
       <TableHeader columns={columns}>
         {(column) => (
           <TableColumn

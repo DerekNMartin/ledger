@@ -14,17 +14,27 @@ type TransactionTemplate = Database['public']['Tables']['Transaction_Templates']
 export type Transaction = Database['public']['Tables']['Transactions']['Insert']
 export type TransactionInsert = Database['public']['Tables']['Transactions']['Insert']
 
+function processDate(dateString?: string) {
+    if (!dateString) return 'No Date'
+    const date = new Date(dateString);
+    const isValidDate = !isNaN(date.valueOf());
+    return isValidDate ? date.toISOString() : 'Invalid Date'
+}
+
 function normalizeDescription(description: any) {
+  if (!description) return 'No Description'
+
   const VENDOR_ALIASES = {
     amazon: 'amazon',
     dazn: 'dazn',
     youtube: 'youtube',
     mcdonalds: 'mcdonalds',
-    uber: 'uber',
+    'uber trip': 'uber trip',
+    doordash: 'doordash',
     lyft: 'lyft',
     msbill: 'microsoft',
     'joes nf': 'no frills',
-    loblaw: 'loblaws'
+    loblaw: 'loblaws',
   };
 
   const cleaned = description
@@ -81,7 +91,7 @@ function createTransactions(json: Record<string, any>[], accountId?: string) {
       is_reoccuring: false,
       account_id: Number(accountId) || null,
       amount: Number(tableRow[amountKey]),
-      date: new Date(tableRow[dateKey]).toISOString(),
+      date: processDate(tableRow[dateKey]),
     };
 
     transactions.push(newTransaction);

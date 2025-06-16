@@ -5,14 +5,12 @@
  * Scotiabank - filter | date | description | sub-description | status | type of transaction | amount
  * date | description | amount
  */
-import type { Database } from '@/lib/supabase/database.types';
+
+import type { TransactionInsert } from '@/lib/supabase/types';
 
 import { fileToJson } from '@/lib/xlsx/utils';
-import { createClient } from '@/lib/supabase/server';
+import transactionTemplates from '@/lib/supabase/transactionTemplates'
 
-type TransactionTemplate = Database['public']['Tables']['Transaction_Templates']['Row']
-export type Transaction = Database['public']['Tables']['Transactions']['Insert']
-export type TransactionInsert = Database['public']['Tables']['Transactions']['Insert']
 
 function processDate(dateString?: string) {
     if (!dateString) return 'No Date'
@@ -53,17 +51,6 @@ function normalizeDescription(description: any) {
   return matchingAlias || cleaned;
 }
 
-async function valueFromTemplate(key: keyof TransactionTemplate, description: string) {
-  const supabase = await createClient();
-  const { data: matchingTemplate } = await supabase
-    .from('Transaction_Templates')
-    .select('*')
-    .eq('description', description)
-    .single();
-  if (!matchingTemplate) return
-  return matchingTemplate[key]
-}
-
 function findKey(keyType: 'date' | 'amount' | 'description', rowItem: Record<string, any>) {
   const colHeaderVariants = {
     date: ['date', 'transaction date'],
@@ -75,7 +62,7 @@ function findKey(keyType: 'date' | 'amount' | 'description', rowItem: Record<str
   ) as keyof typeof rowItem;
 }
 
-function createTransactions(json: Record<string, any>[], accountId?: string) {
+function createTransactions(json: Record<string, any>[], accountId?: string): TransactionInsert[] {
   const newTransactions = json.reduce<TransactionInsert[]>((transactions, tableRow) => {
     const dateKey = findKey('date', tableRow);
     const amountKey = findKey('amount', tableRow);
@@ -112,17 +99,8 @@ export async function POST(request: Request) {
   const json = await fileToJson<Record<string, any>>(file);
   const newTransactions = createTransactions(json, account);
 
-  const templateMatchedTransactions = await Promise.all(newTransactions.map(async (transaction) => {
-    const name = await valueFromTemplate('name', transaction.description)
-    const category = await valueFromTemplate('category', transaction.description)
-    const isReoccuring = await valueFromTemplate('is_reoccuring', transaction.description) ?? false
-    return {
-      ...transaction,
-      is_reoccuring: Boolean(isReoccuring),
-      name: name && typeof name === 'string' ? name : transaction.name,
-      category: category && typeof category === 'string' ? category : transaction.category
-    }
-  }))
+  const {templateMatchedTransactions} = await transactionTemplates()
+  const matchedTransactions = await templateMatchedTransactions(newTransactions)
 
-  return Response.json({ data: templateMatchedTransactions });
+  return Response.json({ data: matchedTransactions });
 }

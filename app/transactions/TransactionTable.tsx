@@ -1,9 +1,17 @@
 import type { Transaction } from '@/api/transactions/upload/route';
 
-import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from '@heroui/table';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableColumn,
+  TableRow,
+  TableCell,
+  Pagination,
+} from '@heroui/react';
 
 import useRenderCell from '@/transactions/useRenderCell';
-import { useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 
 export interface TransactionTableProps {
   transactions?: Transaction[];
@@ -26,14 +34,31 @@ export default function TransactionTable(
 ) {
   if (!transactions) return;
 
+  const renderCell = useRenderCell();
+
   const handleUpdateData = useCallback((rowId: string, rowData?: Partial<Transaction>) => {
     if (onUpdateData) onUpdateData(rowId, rowData);
   }, []);
 
-  const renderCell = useRenderCell();
+  const [page, setPage] = useState(1);
+  const rowsPerPage = 15;
+  const pages = Math.ceil(transactions.length / rowsPerPage);
+
+  const viewableTransactions = useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    return transactions.slice(start, end);
+  }, [page, transactions]);
+
+  const TablePagination = (
+    <div className="flex w-full justify-end border-t border-neutral-200 pt-4">
+      <Pagination showControls page={page} total={pages} onChange={(page) => setPage(page)} />
+    </div>
+  );
 
   return (
-    <Table aria-label="Transaction Data Table">
+    <Table aria-label="Transaction Data Table" bottomContent={TablePagination}>
       <TableHeader columns={columns}>
         {(column) => (
           <TableColumn
@@ -45,7 +70,7 @@ export default function TransactionTable(
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody items={transactions}>
+      <TableBody items={viewableTransactions}>
         {(transaction) => (
           <TableRow key={transaction.id}>
             {(columnKey) => (

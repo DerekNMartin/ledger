@@ -44,8 +44,11 @@ export default function useRenderCell() {
               className="min-w-44"
               variant="bordered"
               placeholder="Transaction name"
-              value={transaction.name || ''}
-              onValueChange={(value) => handleUpdateData({ name: value })}
+              defaultValue={transaction.name || ''}
+              onBlur={(event) => {
+                event.preventDefault();
+                handleUpdateData({ name: event.target.value });
+              }}
             />
           ) : (
             transaction.name
@@ -55,7 +58,7 @@ export default function useRenderCell() {
         case 'category':
           return editable ? (
             <CategorySelect
-              className="w-44"
+              className="min-w-44"
               selectedKeys={[transaction.category || '']}
               onSelectionChange={(selection) =>
                 handleUpdateData({ category: selection.currentKey })

@@ -2,9 +2,10 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Resources
 
-Collection of varous links and documentation of tools and libraries used:
+Collection of various links and documentation of tools and libraries used:
 
 - [HeroUI](https://www.heroui.com/docs/guide/introduction) - UI library
+- [HeroIcons](https://heroicons.com/outline) - Icon Library
 - [SheetJS](https://docs.sheetjs.com/docs/) - extracting useful data from almost any complex spreadsheet (csv/xls parsing)
 
 ## Getting Started

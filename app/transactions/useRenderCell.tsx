@@ -1,6 +1,6 @@
 'use client';
 
-import { Transaction } from '@/api/transactions/upload/route';
+import { Transaction } from '@/lib/supabase/types';
 import { Input, Switch } from '@heroui/react';
 import CategorySelect from '@/lib/components/CategorySelect';
 import AccountSelect from '@/lib/components/AccountSelect';

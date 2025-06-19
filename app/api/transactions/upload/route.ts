@@ -13,10 +13,10 @@ import transactionTemplates from '@/lib/supabase/transactionTemplates'
 
 
 function processDate(dateString?: string) {
-    if (!dateString) return 'No Date'
-    const date = new Date(dateString);
-    const isValidDate = !isNaN(date.valueOf());
-    return isValidDate ? date.toISOString() : 'Invalid Date'
+  if (!dateString) return 'No Date'
+  const date = new Date(dateString);
+  const isValidDate = !isNaN(date.valueOf());
+  return isValidDate ? date.toISOString() : 'Invalid Date'
 }
 
 function normalizeDescription(description: any) {
@@ -45,8 +45,8 @@ function normalizeDescription(description: any) {
     .replace(/\s+/g, ' ') // remove whitespace
     .trim()
 
-    const matchingAliasKey = Object.keys(VENDOR_ALIASES).find((key) => cleaned.includes(key)) as keyof typeof VENDOR_ALIASES
-    const matchingAlias = VENDOR_ALIASES[matchingAliasKey]
+  const matchingAliasKey = Object.keys(VENDOR_ALIASES).find((key) => cleaned.includes(key)) as keyof typeof VENDOR_ALIASES
+  const matchingAlias = VENDOR_ALIASES[matchingAliasKey]
 
   return matchingAlias || cleaned;
 }
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
   const json = await fileToJson<Record<string, any>>(file);
   const newTransactions = createTransactions(json, account);
 
-  const {templateMatchedTransactions} = await transactionTemplates()
+  const { templateMatchedTransactions } = await transactionTemplates()
   const matchedTransactions = await templateMatchedTransactions(newTransactions)
 
   return Response.json({ data: matchedTransactions });

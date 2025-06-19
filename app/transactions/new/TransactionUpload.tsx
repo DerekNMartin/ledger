@@ -1,4 +1,4 @@
-import type { Transaction } from '@/api/transactions/upload/route';
+import type { Transaction } from '@/lib/supabase/types';
 
 import { useRef, useState } from 'react';
 
@@ -56,7 +56,7 @@ export default function TransactionUpload({
         accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         placeholder="Upload transaction CSV file"
       />
-      <Button onPress={uploadFile} color="primary" isLoading={isLoading}>
+      <Button onPress={uploadFile} color="primary" isLoading={isLoading} variant="bordered">
         Upload File
       </Button>
     </div>

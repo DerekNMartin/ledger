@@ -1,9 +1,6 @@
-import type { Database } from '@/lib/supabase/database.types';
-import { Transaction } from './upload/route';
-import type { NextApiRequest, NextApiResponse } from 'next'
+import { Transaction, TransactionTemplateInsert } from '@/lib/supabase/types';
+import type { NextApiRequest } from 'next'
 import { createClient } from '@/lib/supabase/server';
-
-type TransactionTemplateInsert = Database['public']['Tables']['Transaction_Templates']['Insert']
 
 export async function GET(request: NextApiRequest) {
   // TODO: Add pagination + filtering
@@ -26,13 +23,13 @@ export async function POST(request: Request) {
   const transactions = body.transactions as Transaction[]
   // remove temporary ID added in /transactions/upload
   const cleanedTransactions = transactions.map((transaction) => {
-    const {id, ...rest} = transaction
+    const { id, ...rest } = transaction
     return rest
   })
   const { error } = await supabase
-  .from('Transactions')
-  .insert(cleanedTransactions)
-  .select()
+    .from('Transactions')
+    .insert(cleanedTransactions)
+    .select()
 
   const templates: TransactionTemplateInsert[] = transactions.map((transaction) => ({
     category: transaction.category,

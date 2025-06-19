@@ -1,4 +1,4 @@
-import type { Transaction } from '@/api/transactions/upload/route';
+import type { Transaction } from '@/lib/supabase/types';
 
 import {
   Table,

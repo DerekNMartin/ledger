@@ -1,6 +1,6 @@
 'use client';
 
-import type { Transaction } from '@/api/transactions/upload/route';
+import type { Transaction } from '@/lib/supabase/types';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -40,15 +40,17 @@ export default function TransactionsNew() {
       <section className="flex justify-between items-center">
         <h2 className="font-bold text-2xl">Upload Transactions</h2>
       </section>
-      <TransactionUpload onUpload={setTransactionData} />
-      <TransactionTable transactions={transactionData} onUpdateData={updateData} editable />
-      <footer className="w-full flex justify-end">
+      <section>
+        <TransactionUpload onUpload={setTransactionData} />
+      </section>
+      <section className="w-full flex justify-end">
         {transactionData && (
           <Button color="primary" onPress={handleSaveTransactions}>
             Save Transactions
           </Button>
         )}
-      </footer>
+      </section>
+      <TransactionTable transactions={transactionData} onUpdateData={updateData} editable />
     </main>
   );
 }

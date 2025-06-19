@@ -1,6 +1,6 @@
 'use client';
 
-import type { Transaction } from '@/api/transactions/upload/route';
+import type { Transaction } from '@/lib/supabase/types';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@heroui/react';

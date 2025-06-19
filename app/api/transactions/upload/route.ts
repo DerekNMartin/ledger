@@ -20,7 +20,7 @@ function processDate(dateString?: string) {
   return isValidDate ? date.toISOString() : 'Invalid Date'
 }
 
-function normalizeDescription(description: any) {
+function normalizeDescription(description: string) {
   if (!description) return 'No Description'
 
   const VENDOR_ALIASES = {
@@ -52,7 +52,7 @@ function normalizeDescription(description: any) {
   return matchingAlias || cleaned;
 }
 
-function findKey(keyType: 'date' | 'amount' | 'description', rowItem: Record<string, any>) {
+function findKey(keyType: 'date' | 'amount' | 'description', rowItem: Record<string, string | number | boolean>) {
   const colHeaderVariants = {
     date: ['date', 'transaction date'],
     amount: ['amount', 'cad$'],
@@ -63,13 +63,13 @@ function findKey(keyType: 'date' | 'amount' | 'description', rowItem: Record<str
   ) as keyof typeof rowItem;
 }
 
-function createTransactions(json: Record<string, any>[], account?: Account | number): TransactionInsert[] {
+function createTransactions(json: Record<string, string | number>[], account?: Account | number): TransactionInsert[] {
   const newTransactions = json.reduce<TransactionInsert[]>((transactions, tableRow) => {
     const dateKey = findKey('date', tableRow);
     const amountKey = findKey('amount', tableRow);
     const descriptionKey = findKey('description', tableRow)
 
-    const description = normalizeDescription(tableRow[descriptionKey])
+    const description = normalizeDescription(tableRow[descriptionKey] + '')
     const accountId = typeof account === 'number' ? account : account?.id;
     const amount = Number(tableRow[amountKey])
 
@@ -81,7 +81,7 @@ function createTransactions(json: Record<string, any>[], account?: Account | num
       is_reoccuring: false,
       account_id: accountId || null,
       amount: typeof account === 'object' && account.type === 'cc' ? -amount : amount,
-      date: processDate(tableRow[dateKey]),
+      date: processDate(tableRow[dateKey] + ''),
     };
 
     transactions.push(newTransaction);
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
     return Response.json({ error: 'No file uploaded' }, { status: 400 });
   }
 
-  const json = await fileToJson<Record<string, any>>(file);
+  const json = await fileToJson<Record<string, string | number>>(file);
 
   const { getAccountById } = await accounts();
   const account = await getAccountById(accountId) || Number(accountId);

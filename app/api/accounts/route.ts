@@ -6,12 +6,11 @@ export type Account = Database['public']['Tables']['Accounts']['Row'];
 export async function GET() {
   const supabase = await createClient();
 
-  let { data: accounts, error } = await supabase.from('Accounts').select('*');
+  const { data: accounts, error } = await supabase.from('Accounts').select('*');
 
   if (error) throw error
 
   return new Response(JSON.stringify(accounts), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' }
+    status: 200, headers: { 'Content-Type': 'application/json' }
   });
 }

@@ -32,23 +32,24 @@ const columns: { name: string; id: keyof Partial<Transaction> }[] = [
 export default function TransactionTable(
   { transactions, editable, onUpdateData }: TransactionTableProps = { editable: false }
 ) {
-  if (!transactions) return;
-
   const renderCell = useRenderCell();
 
-  const handleUpdateData = useCallback((rowId: string, rowData?: Partial<Transaction>) => {
-    if (onUpdateData) onUpdateData(rowId, rowData);
-  }, []);
+  const handleUpdateData = useCallback(
+    (rowId: string, rowData?: Partial<Transaction>) => {
+      if (onUpdateData) onUpdateData(rowId, rowData);
+    },
+    [onUpdateData]
+  );
 
   const [page, setPage] = useState(1);
   const rowsPerPage = 15;
-  const pages = Math.ceil(transactions.length / rowsPerPage);
+  const pages = Math.ceil(transactions?.length || 0 / rowsPerPage);
 
   const viewableTransactions = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
     const end = start + rowsPerPage;
 
-    return transactions.slice(start, end);
+    return transactions?.slice(start, end);
   }, [page, transactions]);
 
   const TablePagination = (

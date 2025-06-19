@@ -1,6 +1,6 @@
 'use client';
 
-import { supabaseContext } from '@/auth/context/AuthContext';
+import { useSupabaseContext } from '@/auth/context/AuthContext';
 import { Button, Input } from '@heroui/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -12,7 +12,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { supabaseClient } = supabaseContext();
+  const { supabaseClient } = useSupabaseContext();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

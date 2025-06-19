@@ -6,10 +6,11 @@
  * date | description | amount
  */
 
-import type { TransactionInsert } from '@/lib/supabase/types';
+import type { Account, TransactionInsert } from '@/lib/supabase/types';
 
 import { fileToJson } from '@/lib/xlsx/utils';
 import transactionTemplates from '@/lib/supabase/transactionTemplates'
+import accounts from '@/lib/supabase/accounts';
 
 
 function processDate(dateString?: string) {
@@ -62,13 +63,15 @@ function findKey(keyType: 'date' | 'amount' | 'description', rowItem: Record<str
   ) as keyof typeof rowItem;
 }
 
-function createTransactions(json: Record<string, any>[], accountId?: string): TransactionInsert[] {
+function createTransactions(json: Record<string, any>[], account?: Account | number): TransactionInsert[] {
   const newTransactions = json.reduce<TransactionInsert[]>((transactions, tableRow) => {
     const dateKey = findKey('date', tableRow);
     const amountKey = findKey('amount', tableRow);
     const descriptionKey = findKey('description', tableRow)
 
     const description = normalizeDescription(tableRow[descriptionKey])
+    const accountId = typeof account === 'number' ? account : account?.id;
+    const amount = Number(tableRow[amountKey])
 
     const newTransaction = {
       id: crypto.randomUUID(),
@@ -76,8 +79,8 @@ function createTransactions(json: Record<string, any>[], accountId?: string): Tr
       name: null,
       category: 'general',
       is_reoccuring: false,
-      account_id: Number(accountId) || null,
-      amount: Number(tableRow[amountKey]),
+      account_id: accountId || null,
+      amount: typeof account === 'object' && account.type === 'cc' ? -amount : amount,
       date: processDate(tableRow[dateKey]),
     };
 
@@ -90,13 +93,17 @@ function createTransactions(json: Record<string, any>[], accountId?: string): Tr
 export async function POST(request: Request) {
   const formData = await request.formData();
   const file = formData.get('file') as File;
-  const account = formData.get('account') as string;
+  const accountId = formData.get('account') as string;
 
   if (!file) {
     return Response.json({ error: 'No file uploaded' }, { status: 400 });
   }
 
   const json = await fileToJson<Record<string, any>>(file);
+
+  const { getAccountById } = await accounts();
+  const account = await getAccountById(accountId) || Number(accountId);
+
   const newTransactions = createTransactions(json, account);
 
   const { templateMatchedTransactions } = await transactionTemplates()

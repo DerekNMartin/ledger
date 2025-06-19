@@ -1,14 +1,34 @@
 'use client';
 
 import { Transaction } from '@/lib/supabase/types';
-import { Input, Switch } from '@heroui/react';
+import { Button, Input, Switch } from '@heroui/react';
 import CategorySelect from '@/lib/components/CategorySelect';
 import AccountSelect from '@/lib/components/AccountSelect';
 
 import { useCallback } from 'react';
 
+import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
+
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(value);
+}
+
+function reverseNumSignButton(amount: number, callback: (amount: number) => void) {
+  const isPositive = amount >= 0;
+  return (
+    <Button
+      onPress={() => callback(-amount)}
+      variant="flat"
+      className="w-6 h-6 aspect-square min-w-6 p-1 ml-2 text-xs font-bold"
+      isIconOnly={true}
+    >
+      {isPositive ? (
+        <MinusIcon className="w-full h-full" />
+      ) : (
+        <PlusIcon className="w-full h-full" />
+      )}
+    </Button>
+  );
 }
 
 export default function useRenderCell() {
@@ -54,7 +74,18 @@ export default function useRenderCell() {
             transaction.name
           );
         case 'amount':
-          return formatCurrency(transaction.amount);
+          return (
+            <span
+              className={[
+                'flex items-center justify-end font-bold',
+                ...((transaction.amount < 0 && ['text-red-600 font-normal']) || []),
+              ].join(' ')}
+            >
+              {formatCurrency(transaction.amount)}
+              {editable &&
+                reverseNumSignButton(transaction.amount, (amount) => handleUpdateData({ amount }))}
+            </span>
+          );
         case 'category':
           return editable ? (
             <CategorySelect

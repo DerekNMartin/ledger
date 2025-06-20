@@ -13,6 +13,14 @@ function formatCurrency(value: number) {
   return new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(value);
 }
 
+function formatDate(date: string) {
+  return new Date(date).toLocaleDateString('en-CA', {
+    year: 'numeric',
+    month: 'long',
+    day: '2-digit',
+  });
+}
+
 function reverseNumSignButton(amount: number, callback: (amount: number) => void) {
   const isPositive = amount >= 0;
   return (
@@ -47,7 +55,7 @@ export default function useRenderCell() {
 
       switch (columnKey) {
         case 'date':
-          return new Date(transaction.date).toLocaleDateString();
+          return formatDate(transaction.date);
         case 'account_id':
           return (
             <AccountSelect
@@ -61,6 +69,7 @@ export default function useRenderCell() {
         case 'name':
           return editable ? (
             <Input
+              key={transaction.name || transaction.id} // Ensure input is re-rendered when name changes
               className="min-w-44"
               variant="bordered"
               placeholder="Transaction name"

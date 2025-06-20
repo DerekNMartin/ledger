@@ -43,7 +43,10 @@ export default function TransactionTable(
 
   const [page, setPage] = useState(1);
   const rowsPerPage = 15;
-  const pages = Math.ceil(transactions?.length || 0 / rowsPerPage);
+  const pages = useMemo(() => {
+    if (!transactions) return 0;
+    return transactions?.length <= rowsPerPage ? 1 : Math.ceil(transactions.length / rowsPerPage);
+  }, [transactions]);
 
   const viewableTransactions = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -76,7 +79,10 @@ export default function TransactionTable(
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody items={viewableTransactions}>
+      <TableBody
+        items={viewableTransactions || []}
+        emptyContent="Upload your trasactions to view and modify them."
+      >
         {(transaction) => (
           <TableRow key={transaction.id}>
             {(columnKey) => (

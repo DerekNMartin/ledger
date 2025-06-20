@@ -34,6 +34,8 @@ function normalizeDescription(description: string) {
     msbill: 'microsoft',
     'joes nf': 'no frills',
     loblaw: 'loblaws',
+    koodo: 'koodo',
+    'lcbo': 'lcbo'
   };
 
   const cleaned = description

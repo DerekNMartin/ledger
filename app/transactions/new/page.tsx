@@ -1,3 +1,10 @@
+/**
+ * TODO
+ * - Bug: Prevent propagation on input
+ * - Add a way to remove transactions
+ * - Add an indicator if an transaction has been modified
+ */
+
 'use client';
 
 import type { Transaction } from '@/lib/supabase/types';
@@ -5,7 +12,7 @@ import type { Transaction } from '@/lib/supabase/types';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button } from '@heroui/react';
+import { Button, Checkbox } from '@heroui/react';
 
 import TransactionTable from '@/transactions/TransactionTable';
 import TransactionUpload from '@/transactions/new/TransactionUpload';
@@ -15,10 +22,20 @@ export default function TransactionsNew() {
 
   const [transactionData, setTransactionData] = useState<Transaction[]>();
 
+  const [enableApplyAll, setEnableApplyAll] = useState(true);
+
+  // TODO: Display number of items changed
   function updateData(rowId: string, dataItem?: Partial<Transaction>) {
     if (!transactionData?.length) return;
     setTransactionData((prev) => {
-      return prev?.map((row) => (row.id === rowId ? { ...row, ...dataItem } : row));
+      const rowItem = prev?.find((row) => row.id === rowId);
+      return prev?.map((row) => {
+        // If enableApplyAll, apply changes to all rows with the same description
+        if (row.id === rowId || (enableApplyAll && row.description === rowItem?.description)) {
+          return { ...row, ...dataItem };
+        }
+        return row;
+      });
     });
   }
 
@@ -44,13 +61,16 @@ export default function TransactionsNew() {
         <TransactionUpload onUpload={setTransactionData} />
       </section>
       <section className="w-full flex justify-end">
-        {transactionData && (
-          <Button color="primary" onPress={handleSaveTransactions}>
-            Save Transactions
-          </Button>
-        )}
+        <Checkbox isSelected={enableApplyAll} onValueChange={setEnableApplyAll}>
+          Apply to similar transactions
+        </Checkbox>
       </section>
       <TransactionTable transactions={transactionData} onUpdateData={updateData} editable />
+      <section className="w-full flex justify-end">
+        <Button color="primary" onPress={handleSaveTransactions} disabled={!transactionData}>
+          Save Transactions
+        </Button>
+      </section>
     </main>
   );
 }

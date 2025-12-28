@@ -83,7 +83,7 @@ function createTransactions(json: Record<string, string | number>[], account?: A
       is_reoccuring: false,
       account_id: accountId || null,
       amount: typeof account === 'object' && account.type === 'cc' ? -amount : amount,
-      date: processDate(tableRow[dateKey] + ''),
+      date: processDate(tableRow[dateKey].toString()),
     };
 
     transactions.push(newTransaction);

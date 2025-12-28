@@ -13,8 +13,15 @@ function formatCurrency(value: number) {
   return new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(value);
 }
 
-function formatDate(date: string) {
-  return new Date(date).toLocaleDateString('en-CA', {
+function formatDate(dateInput: string) {
+  // Extract the date part (YYYY-MM-DD) from the ISO string
+  const datePart = dateInput.split('T')[0];
+  const [year, month, day] = datePart.split('-').map(Number);
+
+  // Note: month is 0-indexed in JS (January is 0)
+  const fullDate = new Date(year, month - 1, day);
+
+  return fullDate.toLocaleDateString('en-CA', {
     year: 'numeric',
     month: 'long',
     day: '2-digit',

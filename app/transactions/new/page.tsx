@@ -57,11 +57,13 @@ export default function TransactionsNew() {
       <section className="flex justify-between items-center">
         <h2 className="font-bold text-2xl">Upload Transactions</h2>
       </section>
-      <section>
+      <section className="flex flex-col gap-4 border-b border-neutral-200 pb-6">
         <TransactionUpload onUpload={setTransactionData} />
-      </section>
-      <section className="w-full flex justify-end">
-        <Checkbox isSelected={enableApplyAll} onValueChange={setEnableApplyAll}>
+        <Checkbox
+          className="self-end"
+          isSelected={enableApplyAll}
+          onValueChange={setEnableApplyAll}
+        >
           Apply to similar transactions
         </Checkbox>
       </section>

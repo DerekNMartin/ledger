@@ -70,6 +70,10 @@ export default function TransactionTable(
     enabled: !editable,
   });
 
+  const totalEntries = useMemo(() => {
+    return transactions ? transactions.length : transactionResponse?.meta.total_count || 0;
+  }, [transactions, transactionResponse?.meta]);
+
   const totalPages = useMemo(() => {
     const totalEntries = transactionResponse?.meta.total_count || 0;
     return Math.ceil(totalEntries / PAGE_SIZE);
@@ -92,7 +96,10 @@ export default function TransactionTable(
     ];
 
     return (
-      <section className="flex justify-end">
+      <section className="flex justify-between items-end">
+        <p>
+          Total: <strong>{totalEntries}</strong> transactions
+        </p>
         <Select
           className="max-w-xs"
           items={yearFilterOptions}

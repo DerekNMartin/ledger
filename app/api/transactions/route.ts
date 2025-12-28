@@ -1,5 +1,18 @@
 import { Transaction, TransactionTemplateInsert } from '@/lib/supabase/types';
 import { createClient } from '@/lib/supabase/server';
+import { NextRequest } from 'next/server';
+
+export type APIResponseMeta = {
+  total_count: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+};
+
+export type TransactionsResponse = {
+  data: Transaction[];
+  meta: APIResponseMeta;
+};
 
 function processTransactions(transactions: Transaction[]) {
   return transactions.map((transaction) => {
@@ -28,18 +41,49 @@ function processTemplates(transactions: Transaction[]): TransactionTemplateInser
   }))
 }
 
-export async function GET() {
-  // TODO: Add pagination + filtering
+export async function GET(request: NextRequest) {
   const supabase = await createClient();
+  const searchParams = request.nextUrl.searchParams;
 
-  const { data: transactions, error } = await supabase.from('Transactions').select('*');
+  // Date Range Filter
+  const startDate = searchParams.get('start_date');
+  const endDate = searchParams.get('end_date');
+
+  // Pagination Filter
+  const page = parseInt(searchParams.get('page') || '1');
+  const pageSize = parseInt(searchParams.get('page_size') || '20');
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  let query = supabase
+    .from('Transactions')
+    .select('*', { count: 'exact' }) // count: 'exact' gives us the total row count for the UI
+    .order('date', { ascending: false })
+    .range(from, to);
+
+  // Apply Filters conditionally
+  if (startDate) query = query.gte('date', startDate);
+  if (endDate) query = query.lte('date', endDate);
+
+  const { data: transactions, error, count } = await query;
 
   if (error) throw error
 
-  return new Response(JSON.stringify(transactions), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' }
-  });
+  return new Response(
+    JSON.stringify({
+      data: transactions,
+      meta: {
+        total_count: count,
+        page,
+        page_size: pageSize,
+        total_pages: count ? Math.ceil(count / pageSize) : 0,
+      },
+    }),
+    {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    }
+  );
 }
 
 export async function POST(request: Request) {

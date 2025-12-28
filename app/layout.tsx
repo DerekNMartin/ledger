@@ -3,6 +3,7 @@ import '@/globals.css';
 import { Providers } from '@/providers';
 
 import SignoutButton from '@/auth/SignoutButton';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Ledger',
@@ -19,7 +20,9 @@ export default function RootLayout({
       <body className="antialiased">
         <Providers>
           <header className="flex p-6 mb-6 border-b border-neutral-200 justify-between items-center">
-            <h1 className="font-bold text-2xl my-1">Ledger</h1>
+            <Link href={'/transactions'}>
+              <h1 className="font-bold text-2xl my-1">Ledger</h1>
+            </Link>
             <SignoutButton />
           </header>
           {children}

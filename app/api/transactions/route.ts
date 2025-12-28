@@ -1,4 +1,4 @@
-import { Transaction, TransactionTemplateInsert } from '@/lib/supabase/types';
+import { Transaction, TransactionInsert, TransactionTemplateInsert } from '@/lib/supabase/types';
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest } from 'next/server';
 
@@ -14,7 +14,7 @@ export type TransactionsResponse = {
   meta: APIResponseMeta;
 };
 
-function processTransactions(transactions: Transaction[]) {
+function processTransactions(transactions: Transaction[]): TransactionInsert[] {
   return transactions.map((transaction) => {
     const { id: _id, ...rest } = transaction
     return rest

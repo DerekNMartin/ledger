@@ -2,8 +2,8 @@ import type { Transaction } from '@/lib/supabase/types';
 
 import { useRef, useState } from 'react';
 
-import { Button } from '@heroui/button';
-import { Input } from '@heroui/input';
+import { Button } from '@heroui/react';
+import { Input } from '@heroui/react';
 
 import AccountSelect from '@/lib/components/AccountSelect';
 

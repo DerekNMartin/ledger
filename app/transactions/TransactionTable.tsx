@@ -83,7 +83,17 @@ export default function TransactionTable(
 
   return (
     <Table
+      classNames={{
+        base: 'flex-1 overflow-hidden', // The outer container
+        wrapper: 'flex-1 overflow-auto', // The actual scrollable area for <tbody>
+      }}
+      isHeaderSticky
       aria-label="Transaction Data Table"
+      radius="none"
+      shadow="none"
+      isStriped
+      topContentPlacement="outside"
+      bottomContentPlacement="outside"
       topContent={
         <TransactionTableTopContent selectedYear={filterYear} onYearChange={setFilterYear} />
       }
@@ -97,8 +107,6 @@ export default function TransactionTable(
           onPerPageChange={setPerPage}
         />
       }
-      shadow="none"
-      isStriped
     >
       <TableHeader columns={columns}>
         {(column) => (
@@ -112,6 +120,7 @@ export default function TransactionTable(
         )}
       </TableHeader>
       <TableBody
+        isLoading={isLoading}
         items={transactions && editable ? transactions : transactionResponse?.data || []}
         emptyContent="Upload your trasactions to view and modify them."
       >

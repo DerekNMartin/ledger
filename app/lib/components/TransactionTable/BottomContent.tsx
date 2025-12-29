@@ -24,7 +24,7 @@ export function TransactionTableBottomContent({
   onPageChange,
 }: TransactionTableBottomContentProps) {
   return (
-    <div className="w-full flex justify-between items-center pt-6 border-t border-neutral-200">
+    <div className="w-full flex justify-between items-center p-6 border-t border-neutral-200">
       <p>
         Total: <strong>{totalEntries}</strong> transactions
       </p>

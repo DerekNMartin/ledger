@@ -16,7 +16,7 @@ export function TransactionTableTopContent({
   onYearChange,
 }: TransactionTableTopContentProps) {
   return (
-    <section className="flex justify-end">
+    <section className="flex justify-end p-6 pb-0">
       <Select
         className="max-w-xs"
         items={YEAR_FILTER_OPTIONS}

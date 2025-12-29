@@ -2,7 +2,7 @@
 
 import { Transaction } from '@/lib/supabase/types';
 import { Button, Input, Switch } from '@heroui/react';
-import CategorySelect from '@/lib/components/CategorySelect';
+import CategorySelect, { CATEGORIES } from '@/lib/components/CategorySelect';
 import AccountSelect from '@/lib/components/AccountSelect';
 
 import { useCallback } from 'react';
@@ -76,7 +76,8 @@ export default function useRenderCell() {
               }
             />
           ) : (
-            accounts?.find(({ id }) => id === transaction.account_id)?.name || ''
+            accounts?.find(({ id }) => id === transaction.account_id)?.name ||
+              transaction.account_id
           );
         case 'name':
           return editable ? (
@@ -117,7 +118,8 @@ export default function useRenderCell() {
               }
             />
           ) : (
-            transaction.category
+            CATEGORIES.find((cat) => cat.key === transaction.category)?.label ||
+              transaction.category
           );
         case 'is_reoccuring':
           return editable ? (

@@ -1,7 +1,7 @@
 import { Select, SelectItem } from '@heroui/react';
 import type { SelectProps } from '@heroui/react';
 
-export const categories = [
+export const CATEGORIES = [
   { key: 'bills', label: 'Bills' },
   { key: 'cash', label: 'Cash' },
   { key: 'charity', label: 'Charity' },
@@ -23,7 +23,7 @@ export const categories = [
 export default function CategorySelect(props: Omit<SelectProps, 'children'>) {
   return (
     <Select {...props} aria-label="Category Selection" variant="bordered">
-      {categories.map(({ key, label }) => (
+      {CATEGORIES.map(({ key, label }) => (
         <SelectItem key={key}>{label}</SelectItem>
       ))}
     </Select>

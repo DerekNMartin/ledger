@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import type { Account } from '@/lib/supabase/types';
 
+// TODO: Use tanstack query for data fetching and caching
+
 let cachedAccounts: Account[] | null = null;
 let fetching: Promise<Account[]> | null = null;
 

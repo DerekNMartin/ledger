@@ -1,8 +1,10 @@
-import { Select, SelectItem } from '@heroui/react';
+import { Input, Select, SelectItem } from '@heroui/react';
 
 export type TransactionTableTopContentProps = {
   selectedYear: string;
+  searchValue: string;
   onYearChange: (year: string) => void;
+  onSearchChange: (search: string) => void;
 };
 
 const YEAR_FILTER_OPTIONS = [
@@ -13,15 +15,24 @@ const YEAR_FILTER_OPTIONS = [
 
 export function TransactionTableTopContent({
   selectedYear,
+  searchValue,
   onYearChange,
+  onSearchChange,
 }: TransactionTableTopContentProps) {
   return (
-    <section className="flex justify-end p-6 pb-0">
-      <Select
+    <section className="flex justify-between items-center p-6 border-b border-neutral-200">
+      <Input
         className="max-w-xs"
+        size="sm"
+        placeholder="Search"
+        value={searchValue}
+        onValueChange={onSearchChange}
+      />
+      <Select
+        className="max-w-24"
+        size="sm"
         items={YEAR_FILTER_OPTIONS}
         selectedKeys={[selectedYear]}
-        label="Year"
         onChange={(event) => onYearChange(event.target.value)}
       >
         {(year) => <SelectItem>{year.label}</SelectItem>}

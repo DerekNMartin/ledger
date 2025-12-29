@@ -8,6 +8,7 @@ import { TransactionTableBottomContent } from '@/lib/components/TransactionTable
 import { TransactionTableTopContent } from '@/lib/components/TransactionTable/TopContent';
 
 import useRenderCell from '@/transactions/useRenderCell';
+import { useDebounce } from '@/lib/hooks/useDebounce';
 
 export type TransactionTableProps = {
   editable?: boolean;
@@ -28,6 +29,9 @@ const columns: { name: string; id: keyof Partial<Transaction> }[] = [
 export default function TransactionTable(
   { transactions, editable, onUpdateData }: TransactionTableProps = { editable: false }
 ) {
+  // Search
+  const [searchValue, setSearchValue] = useState('');
+  const debouncedSearch = useDebounce(searchValue);
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState('25');
@@ -45,6 +49,7 @@ export default function TransactionTable(
     try {
       const baseUrl = window.location.origin;
       const url = new URL('/api/transactions', baseUrl);
+      if (searchValue) url.searchParams.append('search', debouncedSearch);
       url.searchParams.append('page', currentPage.toString());
       url.searchParams.append('page_size', perPage);
       url.searchParams.append('start_date', filterDateRange.start);
@@ -57,7 +62,7 @@ export default function TransactionTable(
   }
 
   const { data: transactionResponse, isLoading } = useQuery<TransactionsResponse>({
-    queryKey: ['transactions', currentPage, filterYear, perPage],
+    queryKey: ['transactions', currentPage, filterYear, perPage, debouncedSearch],
     queryFn: fetchTransactions,
     enabled: !editable,
     placeholderData: keepPreviousData,
@@ -89,13 +94,17 @@ export default function TransactionTable(
       }}
       isHeaderSticky
       aria-label="Transaction Data Table"
-      radius="none"
       shadow="none"
       isStriped
       topContentPlacement="outside"
       bottomContentPlacement="outside"
       topContent={
-        <TransactionTableTopContent selectedYear={filterYear} onYearChange={setFilterYear} />
+        <TransactionTableTopContent
+          selectedYear={filterYear}
+          onYearChange={setFilterYear}
+          searchValue={searchValue}
+          onSearchChange={setSearchValue}
+        />
       }
       bottomContent={
         <TransactionTableBottomContent
@@ -122,7 +131,11 @@ export default function TransactionTable(
       <TableBody
         isLoading={isLoading}
         items={transactions && editable ? transactions : transactionResponse?.data || []}
-        emptyContent="Upload your trasactions to view and modify them."
+        emptyContent={
+          searchValue
+            ? 'No matching transactions found.'
+            : 'Upload your trasactions to view and modify them.'
+        }
       >
         {(transaction) => (
           <TableRow key={transaction.id}>

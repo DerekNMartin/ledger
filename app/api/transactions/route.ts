@@ -50,6 +50,12 @@ export async function GET(request: NextRequest) {
     .select('*', { count: 'exact' }) // count: 'exact' gives us the total row count for the UI
     .order('date', { ascending: false });
 
+  // Search Filter
+  const search = searchParams.get('search');
+  if (search) {
+    query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);;
+  }
+
   // Pagination Filter
   const page = parseInt(searchParams.get('page') || '0');
   const pageSize = parseInt(searchParams.get('page_size') || '0');

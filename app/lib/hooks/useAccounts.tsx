@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { Account } from '@/api/accounts/route';
+import type { Account } from '@/lib/supabase/types';
 
 let cachedAccounts: Account[] | null = null;
 let fetching: Promise<Account[]> | null = null;

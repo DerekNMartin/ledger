@@ -8,6 +8,7 @@ import AccountSelect from '@/lib/components/AccountSelect';
 import { useCallback } from 'react';
 
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { useAccounts } from '@/lib/hooks/useAccounts';
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(value);
@@ -47,6 +48,7 @@ function reverseNumSignButton(amount: number, callback: (amount: number) => void
 }
 
 export default function useRenderCell() {
+  const { accounts } = useAccounts();
   return useCallback(
     (
       transaction: Transaction,
@@ -64,14 +66,17 @@ export default function useRenderCell() {
         case 'date':
           return formatDate(transaction.date);
         case 'account_id':
-          return (
+          return editable ? (
             <AccountSelect
+              accounts={accounts}
               disabled={!editable}
               selectedKeys={[transaction.account_id?.toString() || '']}
               onSelectionChange={(selection) =>
                 handleUpdateData({ account_id: Number(selection.currentKey) })
               }
             />
+          ) : (
+            accounts?.find(({ id }) => id === transaction.account_id)?.name || ''
           );
         case 'name':
           return editable ? (
@@ -131,6 +136,6 @@ export default function useRenderCell() {
           return cellValue;
       }
     },
-    []
+    [accounts]
   );
 }

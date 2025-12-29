@@ -1,7 +1,4 @@
 import { createClient } from '@/lib/supabase/server';
-import type { Database } from '@/lib/supabase/database.types';
-
-export type Account = Database['public']['Tables']['Accounts']['Row'];
 
 export async function GET() {
   const supabase = await createClient();

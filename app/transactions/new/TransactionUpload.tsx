@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 
 import { Button } from '@heroui/react';
 import { Input } from '@heroui/react';
+import { useAccounts } from '@/lib/hooks/useAccounts';
 
 import AccountSelect from '@/lib/components/AccountSelect';
 
@@ -14,6 +15,7 @@ export default function TransactionUpload({
 }) {
   const fileInput = useRef<HTMLInputElement>(null);
   const [selectedAccount, setSelectedAccount] = useState<string>();
+  const { accounts } = useAccounts();
 
   function getFormDataFile() {
     if (!fileInput?.current?.files) throw new Error('No files provided');
@@ -46,6 +48,7 @@ export default function TransactionUpload({
   return (
     <div className="flex gap-2">
       <AccountSelect
+        accounts={accounts}
         className="w-56"
         selectedKeys={[selectedAccount || '']}
         onSelectionChange={(selection) => setSelectedAccount(selection.currentKey)}

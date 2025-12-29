@@ -16,9 +16,9 @@ export type TransactionsResponse = {
 
 function processTransactions(transactions: Transaction[]): TransactionInsert[] {
   return transactions.map((transaction) => {
-    const { id: _id, ...rest } = transaction
-    return rest
-  })
+    const { id: _id, ...rest } = transaction;
+    return rest;
+  });
 }
 
 function processTemplates(transactions: Transaction[]): TransactionTemplateInsert[] {
@@ -37,37 +37,38 @@ function processTemplates(transactions: Transaction[]): TransactionTemplateInser
     category: transaction.category,
     is_reoccuring: transaction.is_reoccuring,
     name: transaction.name,
-    description: transaction.description
-  }))
+    description: transaction.description,
+  }));
 }
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
   const searchParams = request.nextUrl.searchParams;
 
-  // Date Range Filter
-  const startDate = searchParams.get('start_date');
-  const endDate = searchParams.get('end_date');
-
-  // Pagination Filter
-  const page = parseInt(searchParams.get('page') || '1');
-  const pageSize = parseInt(searchParams.get('page_size') || '20');
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
-
   let query = supabase
     .from('Transactions')
     .select('*', { count: 'exact' }) // count: 'exact' gives us the total row count for the UI
-    .order('date', { ascending: false })
-    .range(from, to);
+    .order('date', { ascending: false });
 
+  // Pagination Filter
+  const page = parseInt(searchParams.get('page') || '0');
+  const pageSize = parseInt(searchParams.get('page_size') || '0');
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  if (page > 0 && pageSize >= 0) {
+    query = query.range(from, to);
+  }
+
+  // Date Range Filter
+  const startDate = searchParams.get('start_date');
+  const endDate = searchParams.get('end_date');
   // Apply Filters conditionally
   if (startDate) query = query.gte('date', startDate);
   if (endDate) query = query.lte('date', endDate);
 
   const { data: transactions, error, count } = await query;
 
-  if (error) throw error
+  if (error) throw error;
 
   return new Response(
     JSON.stringify({
@@ -90,30 +91,27 @@ export async function POST(request: Request) {
   const supabase = await createClient();
 
   const body = await request.json();
-  const transactions = body.transactions as Transaction[]
+  const transactions = body.transactions as Transaction[];
   // remove temporary ID added in /transactions/upload
   const cleanedTransactions = processTransactions(transactions);
-  const { error } = await supabase
-    .from('Transactions')
-    .insert(cleanedTransactions)
-    .select()
+  const { error } = await supabase.from('Transactions').insert(cleanedTransactions).select();
   if (error) {
     console.error('Error inserting transactions:', error);
-    throw error
+    throw error;
   }
 
-  const templates = processTemplates(transactions)
+  const templates = processTemplates(transactions);
   const { error: templatesError } = await supabase
     .from('Transaction_Templates')
     .upsert(templates, { onConflict: 'description' })
-    .select()
+    .select();
   if (templatesError) {
     console.error('Error inserting templates:', templatesError);
-    throw error
+    throw error;
   }
 
   return new Response(JSON.stringify(transactions), {
     status: 201,
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/json' },
   });
 }

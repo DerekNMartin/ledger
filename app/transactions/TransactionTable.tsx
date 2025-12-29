@@ -1,21 +1,13 @@
 import type { Transaction } from '@/lib/supabase/types';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { TransactionsResponse } from '@/api/transactions/route';
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableColumn,
-  TableRow,
-  TableCell,
-  Pagination,
-  Select,
-  SelectItem,
-} from '@heroui/react';
-import { useMemo, useState } from 'react';
+import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from '@heroui/react';
+import { useMemo, useState, useCallback } from 'react';
+
+import { TransactionTableBottomContent } from '@/lib/components/TransactionTable/BottomContent';
+import { TransactionTableTopContent } from '@/lib/components/TransactionTable/TopContent';
 
 import useRenderCell from '@/transactions/useRenderCell';
-import { useCallback } from 'react';
 
 export type TransactionTableProps = {
   editable?: boolean;
@@ -89,66 +81,24 @@ export default function TransactionTable(
     [onUpdateData]
   );
 
-  function TopContent() {
-    const yearFilterOptions = [
-      { key: '2026', label: '2026' },
-      { key: '2025', label: '2025' },
-      { key: '2024', label: '2024' },
-    ];
-
-    return (
-      <section className="flex justify-end">
-        <Select
-          className="max-w-xs"
-          items={yearFilterOptions}
-          selectedKeys={[filterYear]}
-          label="Year"
-          onChange={(event) => setFilterYear(event.target.value)}
-        >
-          {(year) => <SelectItem>{year.label}</SelectItem>}
-        </Select>
-      </section>
-    );
-  }
-
-  const BottomContent =
-    currentPage && totalPages ? (
-      <div className="w-full flex justify-between items-center pt-6 border-t border-neutral-200">
-        <p>
-          Total: <strong>{totalEntries}</strong> transactions
-        </p>
-        <div className="flex gap-4 flex-1 justify-end items-center">
-          {/* Page Size Controls */}
-          <Select
-            className="max-w-20"
-            size="sm"
-            items={[
-              { key: '25', label: '25' },
-              { key: '50', label: '50' },
-              { key: '100', label: '100' },
-            ]}
-            selectedKeys={[perPage]}
-            onChange={(event) => setPerPage(event.target.value)}
-          >
-            {(option) => <SelectItem>{option.label}</SelectItem>}
-          </Select>
-          <Pagination
-            showControls
-            size="sm"
-            page={currentPage}
-            total={totalPages}
-            onChange={(page) => setCurrentPage(page)}
-          />
-        </div>
-      </div>
-    ) : null;
-
   return (
     <Table
       aria-label="Transaction Data Table"
-      topContent={TopContent()}
-      bottomContent={BottomContent}
+      topContent={
+        <TransactionTableTopContent selectedYear={filterYear} onYearChange={setFilterYear} />
+      }
+      bottomContent={
+        <TransactionTableBottomContent
+          totalEntries={totalEntries}
+          perPage={perPage}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          onPerPageChange={setPerPage}
+        />
+      }
       shadow="none"
+      isStriped
     >
       <TableHeader columns={columns}>
         {(column) => (

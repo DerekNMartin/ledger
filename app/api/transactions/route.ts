@@ -1,6 +1,7 @@
 import { Transaction, TransactionInsert, TransactionTemplateInsert } from '@/lib/supabase/types';
 import { createClient } from '@/lib/supabase/server';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import * as XLSX from 'xlsx';
 
 export type APIResponseMeta = {
   total_count: number;
@@ -56,6 +57,37 @@ export async function GET(request: NextRequest) {
     query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);;
   }
 
+  // Date Range Filter
+  const startDate = searchParams.get('start_date');
+  const endDate = searchParams.get('end_date');
+  // Apply Filters conditionally
+  if (startDate) query = query.gte('date', startDate);
+  if (endDate) query = query.lte('date', endDate);
+
+  // Download as CSV
+  const download = searchParams.get('download') === 'true';
+  if (download) {
+    // Fetch all matching transactions (no pagination)
+    const { data, error } = await query;
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    // Convert data to CSV
+    // Convert data to CSV using xlsx
+    const worksheet = XLSX.utils.json_to_sheet(data); // Convert JSON data to a worksheet
+    const csv = XLSX.utils.sheet_to_csv(worksheet); // Convert the worksheet to CSV
+
+    // Set headers for CSV download
+    const headers = new Headers({
+      'Content-Type': 'text/csv',
+      'Content-Disposition': 'attachment; filename="transactions.csv"',
+    });
+
+    // Return CSV response
+    return new NextResponse(csv, { headers });
+  }
+
   // Pagination Filter
   const page = parseInt(searchParams.get('page') || '0');
   const pageSize = parseInt(searchParams.get('page_size') || '0');
@@ -65,32 +97,22 @@ export async function GET(request: NextRequest) {
     query = query.range(from, to);
   }
 
-  // Date Range Filter
-  const startDate = searchParams.get('start_date');
-  const endDate = searchParams.get('end_date');
-  // Apply Filters conditionally
-  if (startDate) query = query.gte('date', startDate);
-  if (endDate) query = query.lte('date', endDate);
-
+  // Execute Query
   const { data: transactions, error, count } = await query;
 
-  if (error) throw error;
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 
-  return new Response(
-    JSON.stringify({
-      data: transactions,
-      meta: {
-        total_count: count,
-        page,
-        page_size: pageSize,
-        total_pages: count ? Math.ceil(count / pageSize) : 0,
-      },
-    }),
-    {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    }
-  );
+  return NextResponse.json({
+    data: transactions,
+    meta: {
+      total_count: count,
+      page,
+      page_size: pageSize,
+      total_pages: count ? Math.ceil(count / pageSize) : 0,
+    },
+  });
 }
 
 export async function POST(request: Request) {

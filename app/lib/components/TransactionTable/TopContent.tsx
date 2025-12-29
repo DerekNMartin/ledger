@@ -1,10 +1,21 @@
-import { Input, Select, SelectItem } from '@heroui/react';
+import {
+  Button,
+  Dropdown,
+  DropdownTrigger,
+  Input,
+  Select,
+  SelectItem,
+  DropdownMenu,
+  DropdownItem,
+} from '@heroui/react';
+import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 
 export type TransactionTableTopContentProps = {
   selectedYear: string;
   searchValue: string;
   onYearChange: (year: string) => void;
   onSearchChange: (search: string) => void;
+  onDownloadClick: () => void;
 };
 
 const YEAR_FILTER_OPTIONS = [
@@ -18,6 +29,7 @@ export function TransactionTableTopContent({
   searchValue,
   onYearChange,
   onSearchChange,
+  onDownloadClick,
 }: TransactionTableTopContentProps) {
   return (
     <section className="flex justify-between items-center p-6 border-b border-neutral-200">
@@ -28,15 +40,29 @@ export function TransactionTableTopContent({
         value={searchValue}
         onValueChange={onSearchChange}
       />
-      <Select
-        className="max-w-24"
-        size="sm"
-        items={YEAR_FILTER_OPTIONS}
-        selectedKeys={[selectedYear]}
-        onChange={(event) => onYearChange(event.target.value)}
-      >
-        {(year) => <SelectItem>{year.label}</SelectItem>}
-      </Select>
+      <div className="flex gap-4 items-center flex-1 justify-end">
+        <Select
+          className="max-w-24 shrink-0"
+          size="sm"
+          items={YEAR_FILTER_OPTIONS}
+          selectedKeys={[selectedYear]}
+          onChange={(event) => onYearChange(event.target.value)}
+        >
+          {(year) => <SelectItem>{year.label}</SelectItem>}
+        </Select>
+        <Dropdown>
+          <DropdownTrigger>
+            <Button isIconOnly size="sm" variant="light" color="primary">
+              <EllipsisVerticalIcon className="w-5 h-5" />
+            </Button>
+          </DropdownTrigger>
+          <DropdownMenu aria-label="Static Actions">
+            <DropdownItem key="download" onClick={onDownloadClick}>
+              Download
+            </DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
+      </div>
     </section>
   );
 }

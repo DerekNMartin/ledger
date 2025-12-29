@@ -29,6 +29,7 @@ const columns: { name: string; id: keyof Partial<Transaction> }[] = [
 export default function TransactionTable(
   { transactions, editable, onUpdateData }: TransactionTableProps = { editable: false }
 ) {
+  const [isDownload, setIsDownload] = useState(false);
   // Search
   const [searchValue, setSearchValue] = useState('');
   const debouncedSearch = useDebounce(searchValue);
@@ -50,11 +51,28 @@ export default function TransactionTable(
       const baseUrl = window.location.origin;
       const url = new URL('/api/transactions', baseUrl);
       if (searchValue) url.searchParams.append('search', debouncedSearch);
+      if (isDownload) url.searchParams.append('download', 'true');
       url.searchParams.append('page', currentPage.toString());
       url.searchParams.append('page_size', perPage);
       url.searchParams.append('start_date', filterDateRange.start);
       url.searchParams.append('end_date', filterDateRange.end);
       const response = await fetch(url.href);
+
+      if (isDownload) {
+        // If downloading, handle the response as a file
+        const blob = await response.blob(); // Convert response to a Blob
+        const downloadUrl = window.URL.createObjectURL(blob); // Create a URL for the Blob
+        const link = document.createElement('a'); // Create an <a> element
+        link.href = downloadUrl;
+        link.download = 'transactions.csv'; // Set the filename
+        document.body.appendChild(link);
+        link.click(); // Trigger the download
+        document.body.removeChild(link); // Clean up the DOM
+        window.URL.revokeObjectURL(downloadUrl); // Revoke the Blob URL
+        setIsDownload(false); // Reset the download state
+        return;
+      }
+
       return response.json();
     } catch (error) {
       console.error(error);
@@ -62,7 +80,7 @@ export default function TransactionTable(
   }
 
   const { data: transactionResponse, isLoading } = useQuery<TransactionsResponse>({
-    queryKey: ['transactions', currentPage, filterYear, perPage, debouncedSearch],
+    queryKey: ['transactions', currentPage, filterYear, perPage, debouncedSearch, isDownload],
     queryFn: fetchTransactions,
     enabled: !editable,
     placeholderData: keepPreviousData,
@@ -104,6 +122,7 @@ export default function TransactionTable(
           onYearChange={setFilterYear}
           searchValue={searchValue}
           onSearchChange={setSearchValue}
+          onDownloadClick={() => setIsDownload(true)}
         />
       }
       bottomContent={

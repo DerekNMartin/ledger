@@ -29,6 +29,8 @@ const columns: { name: string; id: keyof Partial<Transaction> }[] = [
 export default function TransactionTable(
   { transactions, editable, onUpdateData }: TransactionTableProps = { editable: false }
 ) {
+  const renderCell = useRenderCell();
+
   const [isDownload, setIsDownload] = useState(false);
   // Search
   const [searchValue, setSearchValue] = useState('');
@@ -70,7 +72,7 @@ export default function TransactionTable(
         document.body.removeChild(link); // Clean up the DOM
         window.URL.revokeObjectURL(downloadUrl); // Revoke the Blob URL
         setIsDownload(false); // Reset the download state
-        return;
+        return null; // Query data cannot be undefined
       }
 
       return response.json();
@@ -91,11 +93,44 @@ export default function TransactionTable(
   }, [transactions, transactionResponse?.meta]);
 
   const totalPages = useMemo(() => {
+    if (editable && transactions) {
+      return Math.ceil(transactions.length / parseInt(perPage));
+    }
     const totalEntries = transactionResponse?.meta.total_count || 0;
     return Math.ceil(totalEntries / parseInt(perPage));
-  }, [transactionResponse?.meta, perPage]);
+  }, [transactionResponse?.meta, perPage, transactions, editable]);
 
-  const renderCell = useRenderCell();
+  /** ------ Edit Table Logic ----- */
+
+  /**
+   * Filters transactions based on search value, date range, and pagination.
+   * Only used when `editable` is true.
+   */
+  const filteredTransactions = useMemo(() => {
+    if (!transactions) return [];
+    return transactions.filter((transaction) => {
+      // search filtering
+      const matchesSearch = debouncedSearch
+        ? Object.values(transaction).some((value) =>
+            String(value).toLowerCase().includes(debouncedSearch.toLowerCase())
+          )
+        : true;
+
+      // date range filtering
+      const transactionDate = new Date(transaction.date);
+      const startDate = new Date(filterDateRange.start);
+      const endDate = new Date(filterDateRange.end);
+      const withinDateRange = transactionDate >= startDate && transactionDate <= endDate;
+
+      // current page filtering
+      const startIndex = (currentPage - 1) * parseInt(perPage);
+      const endIndex = startIndex + parseInt(perPage);
+      const index = transactions.indexOf(transaction);
+      const withinCurrentPage = index >= startIndex && index < endIndex;
+
+      return matchesSearch && withinDateRange && withinCurrentPage;
+    });
+  }, [transactions, debouncedSearch, filterDateRange, perPage, currentPage]);
 
   const handleUpdateData = useCallback(
     (rowId: string, rowData?: Partial<Transaction>) => {
@@ -149,7 +184,7 @@ export default function TransactionTable(
       </TableHeader>
       <TableBody
         isLoading={isLoading}
-        items={transactions && editable ? transactions : transactionResponse?.data || []}
+        items={transactions && editable ? filteredTransactions : transactionResponse?.data || []}
         emptyContent={
           searchValue
             ? 'No matching transactions found.'

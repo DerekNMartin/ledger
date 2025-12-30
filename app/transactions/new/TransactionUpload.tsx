@@ -49,7 +49,7 @@ export default function TransactionUpload({
     <div className="flex gap-2">
       <AccountSelect
         accounts={accounts}
-        className="w-56"
+        className="w-xs"
         selectedKeys={[selectedAccount || '']}
         onSelectionChange={(selection) => setSelectedAccount(selection.currentKey)}
       />
@@ -59,7 +59,13 @@ export default function TransactionUpload({
         accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         placeholder="Upload transaction CSV file"
       />
-      <Button onPress={uploadFile} color="primary" isLoading={isLoading} variant="bordered">
+      <Button
+        onPress={uploadFile}
+        color="primary"
+        isLoading={isLoading}
+        variant="bordered"
+        isDisabled={!selectedAccount}
+      >
         Upload File
       </Button>
     </div>

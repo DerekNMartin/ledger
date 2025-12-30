@@ -53,22 +53,22 @@ export default function TransactionsNew() {
   }
 
   return (
-    <main className="flex flex-col gap-8 p-6">
-      <section className="flex justify-between items-center">
+    <main className="flex flex-col h-[calc(100vh-113px)] overflow-hidden">
+      <section className="flex justify-between items-center flex-none p-6 pt-0 border-b border-neutral-200">
         <h2 className="font-bold text-2xl">Upload Transactions</h2>
       </section>
-      <section className="flex flex-col gap-4 border-b border-neutral-200 pb-6">
+      <section className="flex flex-col gap-4 border-b border-neutral-200 p-6 flex-none">
         <TransactionUpload onUpload={setTransactionData} />
+      </section>
+      <TransactionTable transactions={transactionData} onUpdateData={updateData} editable />
+      <section className="w-full flex justify-between items-center p-6 border-t border-neutral-200">
         <Checkbox
           className="self-end"
           isSelected={enableApplyAll}
           onValueChange={setEnableApplyAll}
         >
-          Apply to similar transactions
+          Apply changes to similar transactions
         </Checkbox>
-      </section>
-      <TransactionTable transactions={transactionData} onUpdateData={updateData} editable />
-      <section className="w-full flex justify-end">
         <Button color="primary" onPress={handleSaveTransactions} disabled={!transactionData}>
           Save Transactions
         </Button>

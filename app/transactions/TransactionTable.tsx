@@ -9,6 +9,7 @@ import { TransactionTableTopContent } from '@/lib/components/TransactionTable/To
 
 import useRenderCell from '@/transactions/useRenderCell';
 import { useDebounce } from '@/lib/hooks/useDebounce';
+import { useUrlState } from '@/lib/hooks/useUrlState';
 
 export type TransactionTableProps = {
   editable?: boolean;
@@ -39,7 +40,7 @@ export default function TransactionTable(
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState('25');
   // Year Filter
-  const [filterYear, setFilterYear] = useState('2025');
+  const [filterYear, setFilterYear] = useUrlState('year', '2025');
 
   const filterDateRange = useMemo(() => {
     return {

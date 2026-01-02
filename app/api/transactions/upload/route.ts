@@ -9,19 +9,18 @@
 import type { Account, TransactionInsert } from '@/lib/supabase/types';
 
 import { fileToJson } from '@/lib/xlsx/utils';
-import transactionTemplates from '@/lib/supabase/transactionTemplates'
+import transactionTemplates from '@/lib/supabase/transactionTemplates';
 import accounts from '@/lib/supabase/accounts';
 
-
 function processDate(dateString?: string) {
-  if (!dateString) return 'No Date'
+  if (!dateString) return 'No Date';
   const date = new Date(dateString);
   const isValidDate = !isNaN(date.valueOf());
-  return isValidDate ? date.toISOString() : 'Invalid Date'
+  return isValidDate ? date.toISOString() : 'Invalid Date';
 }
 
 function normalizeDescription(description: string) {
-  if (!description) return 'No Description'
+  if (!description) return 'No Description';
 
   const VENDOR_ALIASES = {
     amazon: 'amazon',
@@ -35,7 +34,7 @@ function normalizeDescription(description: string) {
     'joes nf': 'no frills',
     loblaw: 'loblaws',
     koodo: 'koodo',
-    'lcbo': 'lcbo'
+    lcbo: 'lcbo',
   };
 
   const cleaned = description
@@ -43,37 +42,46 @@ function normalizeDescription(description: string) {
     .replace(/https?:\/\//gi, '')
     .replace(/www\./gi, '') // remove www. (case insensitive)
     .replace(/\.(ca|com|co|c|ub)/gi, '') // remove website TLDs (case insensitive)
+    .replace(/toronto/gi, '') // 👈 Remove 'toronto' (case insensitive)
     .replace(/\d+/g, '') // remove numbers
     .replace(/[^\w\s]/g, '') // remove special chars
     .replace(/\s+/g, ' ') // remove whitespace
-    .trim()
+    .trim();
 
-  const matchingAliasKey = Object.keys(VENDOR_ALIASES).find((key) => cleaned.includes(key)) as keyof typeof VENDOR_ALIASES
-  const matchingAlias = VENDOR_ALIASES[matchingAliasKey]
+  const matchingAliasKey = Object.keys(VENDOR_ALIASES).find((key) =>
+    cleaned.includes(key)
+  ) as keyof typeof VENDOR_ALIASES;
+  const matchingAlias = VENDOR_ALIASES[matchingAliasKey];
 
   return matchingAlias || cleaned;
 }
 
-function findKey(keyType: 'date' | 'amount' | 'description', rowItem: Record<string, string | number | boolean>) {
+function findKey(
+  keyType: 'date' | 'amount' | 'description',
+  rowItem: Record<string, string | number | boolean>
+) {
   const colHeaderVariants = {
     date: ['date', 'transaction date'],
     amount: ['amount', 'cad$'],
-    description: ['description', 'description 1']
-  }
+    description: ['description', 'description 1'],
+  };
   return Object.keys(rowItem).find((key) =>
     colHeaderVariants[keyType].includes(key.toLowerCase())
   ) as keyof typeof rowItem;
 }
 
-function createTransactions(json: Record<string, string | number>[], account?: Account | number): TransactionInsert[] {
+function createTransactions(
+  json: Record<string, string | number>[],
+  account?: Account | number
+): TransactionInsert[] {
   const newTransactions = json.reduce<TransactionInsert[]>((transactions, tableRow) => {
     const dateKey = findKey('date', tableRow);
     const amountKey = findKey('amount', tableRow);
-    const descriptionKey = findKey('description', tableRow)
+    const descriptionKey = findKey('description', tableRow);
 
-    const description = normalizeDescription(tableRow[descriptionKey] + '')
+    const description = normalizeDescription(tableRow[descriptionKey] + '');
     const accountId = typeof account === 'number' ? account : account?.id;
-    const amount = Number(tableRow[amountKey])
+    const amount = Number(tableRow[amountKey]);
 
     const newTransaction = {
       id: crypto.randomUUID(),
@@ -94,22 +102,30 @@ function createTransactions(json: Record<string, string | number>[], account?: A
 
 export async function POST(request: Request) {
   const formData = await request.formData();
-  const file = formData.get('file') as File;
+  // Use getAll to retrieve all files appended with the key 'file'
+  const files = formData.getAll('file') as File[];
+
   const accountId = formData.get('account') as string;
 
-  if (!file) {
-    return Response.json({ error: 'No file uploaded' }, { status: 400 });
+  if (files.length === 0) {
+    return Response.json({ error: 'No files uploaded' }, { status: 400 });
   }
 
-  const json = await fileToJson<Record<string, string | number>>(file);
-
   const { getAccountById } = await accounts();
-  const account = await getAccountById(accountId) || Number(accountId);
+  const account = (await getAccountById(accountId)) || Number(accountId);
 
-  const newTransactions = createTransactions(json, account);
+  // Process all files in parallel
+  const transactionPromises = files.map(async (file) => {
+    const json = await fileToJson<Record<string, string | number>>(file);
+    return createTransactions(json, account);
+  });
 
-  const { templateMatchedTransactions } = await transactionTemplates()
-  const matchedTransactions = await templateMatchedTransactions(newTransactions)
+  // Wait for all files to be parsed and combined into a single array
+  const transactionsArrays = await Promise.all(transactionPromises);
+  const combinedTransactions = transactionsArrays.flat();
+
+  const { templateMatchedTransactions } = await transactionTemplates();
+  const matchedTransactions = await templateMatchedTransactions(combinedTransactions);
 
   return Response.json({ data: matchedTransactions });
 }

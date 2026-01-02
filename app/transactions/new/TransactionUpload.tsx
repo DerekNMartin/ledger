@@ -19,10 +19,17 @@ export default function TransactionUpload({
 
   function getFormDataFile() {
     if (!fileInput?.current?.files) throw new Error('No files provided');
-    const file = fileInput.current.files[0];
-    if (!file) throw new Error('No files found');
+    // Convert FileList to an Array to iterate
+    const files = Array.from(fileInput.current.files);
+
+    if (files.length === 0) throw new Error('No files found');
+
     const formData = new FormData();
-    formData.append('file', file);
+    // Append each file using the same key 'file'
+    files.forEach((file) => {
+      formData.append('file', file);
+    });
+
     return formData;
   }
 
@@ -55,6 +62,7 @@ export default function TransactionUpload({
       />
       <Input
         ref={fileInput}
+        multiple
         type="file"
         accept=".csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         placeholder="Upload transaction CSV file"

@@ -93,14 +93,14 @@ export default function useRenderCell() {
               }}
             />
           ) : (
-            transaction.name
+            <p className="font-bold">{transaction.name}</p>
           );
         case 'amount':
           return (
             <span
               className={[
                 'flex items-center justify-end font-bold',
-                ...((transaction.amount < 0 && ['text-red-600 font-normal']) || []),
+                ...((transaction.amount > 0 && ['text-green-600']) || []),
               ].join(' ')}
             >
               {formatCurrency(transaction.amount)}

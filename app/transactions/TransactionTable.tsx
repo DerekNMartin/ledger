@@ -147,11 +147,13 @@ export default function TransactionTable(
 
   return (
     <>
-      <TransactionsSummary summary={transactionResponse?.summary} />
+      {transactionResponse && !editable && (
+        <TransactionsSummary summary={transactionResponse?.summary} />
+      )}
       <Table
         classNames={{
           base: 'flex-1 overflow-hidden', // The outer container
-          wrapper: 'flex-1 overflow-auto', // The actual scrollable area for <tbody>
+          wrapper: 'flex-1 overflow-auto scrollbar py-0', // The actual scrollable area for <tbody>
         }}
         isHeaderSticky
         aria-label="Transaction Data Table"

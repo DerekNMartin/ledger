@@ -10,6 +10,7 @@ import { TransactionTableTopContent } from '@/lib/components/TransactionTable/To
 import useRenderCell from '@/transactions/useRenderCell';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import { useUrlState } from '@/lib/hooks/useUrlState';
+import { TransactionsSummary } from '@/lib/components/TransactionTable/TransactionsSummary';
 
 export type TransactionTableProps = {
   editable?: boolean;
@@ -101,7 +102,11 @@ export default function TransactionTable(
     return Math.ceil(totalEntries / parseInt(perPage));
   }, [transactionResponse?.meta, perPage, transactions, editable]);
 
-  /** ------ Edit Table Logic ----- */
+  /**
+   * ---------------------
+   * Edit Table Logic
+   * --------------------
+   */
 
   /**
    * Filters transactions based on search value, date range, and pagination.
@@ -141,69 +146,72 @@ export default function TransactionTable(
   );
 
   return (
-    <Table
-      classNames={{
-        base: 'flex-1 overflow-hidden', // The outer container
-        wrapper: 'flex-1 overflow-auto', // The actual scrollable area for <tbody>
-      }}
-      isHeaderSticky
-      aria-label="Transaction Data Table"
-      shadow="none"
-      isStriped
-      topContentPlacement="outside"
-      bottomContentPlacement="outside"
-      topContent={
-        <TransactionTableTopContent
-          selectedYear={filterYear}
-          onYearChange={setFilterYear}
-          searchValue={searchValue}
-          onSearchChange={setSearchValue}
-          onDownloadClick={() => setIsDownload(true)}
-        />
-      }
-      bottomContent={
-        <TransactionTableBottomContent
-          totalEntries={totalEntries}
-          perPage={perPage}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          onPerPageChange={setPerPage}
-        />
-      }
-    >
-      <TableHeader columns={columns}>
-        {(column) => (
-          <TableColumn
-            key={column.id}
-            className="capitalize"
-            align={['amount', 'category', 'is_reoccuring'].includes(column.id) ? 'end' : 'start'}
-          >
-            {column.name}
-          </TableColumn>
-        )}
-      </TableHeader>
-      <TableBody
-        isLoading={isLoading}
-        items={transactions && editable ? filteredTransactions : transactionResponse?.data || []}
-        emptyContent={
-          searchValue
-            ? 'No matching transactions found.'
-            : 'Upload your trasactions to view and modify them.'
+    <>
+      <TransactionsSummary summary={transactionResponse?.summary} />
+      <Table
+        classNames={{
+          base: 'flex-1 overflow-hidden', // The outer container
+          wrapper: 'flex-1 overflow-auto', // The actual scrollable area for <tbody>
+        }}
+        isHeaderSticky
+        aria-label="Transaction Data Table"
+        shadow="none"
+        isStriped
+        topContentPlacement="outside"
+        bottomContentPlacement="outside"
+        topContent={
+          <TransactionTableTopContent
+            selectedYear={filterYear}
+            onYearChange={setFilterYear}
+            searchValue={searchValue}
+            onSearchChange={setSearchValue}
+            onDownloadClick={() => setIsDownload(true)}
+          />
+        }
+        bottomContent={
+          <TransactionTableBottomContent
+            totalEntries={totalEntries}
+            perPage={perPage}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            onPerPageChange={setPerPage}
+          />
         }
       >
-        {(transaction) => (
-          <TableRow key={transaction.id}>
-            {(columnKey) => (
-              <TableCell>
-                {renderCell(transaction, columnKey, editable, (rowData) =>
-                  handleUpdateData(transaction.id || '', rowData)
-                )}
-              </TableCell>
-            )}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+        <TableHeader columns={columns}>
+          {(column) => (
+            <TableColumn
+              key={column.id}
+              className="capitalize"
+              align={['amount', 'category', 'is_reoccuring'].includes(column.id) ? 'end' : 'start'}
+            >
+              {column.name}
+            </TableColumn>
+          )}
+        </TableHeader>
+        <TableBody
+          isLoading={isLoading}
+          items={transactions && editable ? filteredTransactions : transactionResponse?.data || []}
+          emptyContent={
+            searchValue
+              ? 'No matching transactions found.'
+              : 'Upload your trasactions to view and modify them.'
+          }
+        >
+          {(transaction) => (
+            <TableRow key={transaction.id}>
+              {(columnKey) => (
+                <TableCell>
+                  {renderCell(transaction, columnKey, editable, (rowData) =>
+                    handleUpdateData(transaction.id || '', rowData)
+                  )}
+                </TableCell>
+              )}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </>
   );
 }

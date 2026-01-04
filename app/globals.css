@@ -42,5 +42,10 @@ body {
 }
 
 .scrollbar {
-  scrollbar-color: var(--color-neutral-400) white;
+  scrollbar-color: var(--color-neutral-300) white;
+}
+
+.scrollbar-thin {
+  scrollbar-color: var(--color-neutral-300) white;
+  scrollbar-width: thin;
 }

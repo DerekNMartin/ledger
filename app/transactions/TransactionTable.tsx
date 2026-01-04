@@ -42,6 +42,8 @@ export default function TransactionTable(
   const [perPage, setPerPage] = useState('25');
   // Year Filter
   const [filterYear, setFilterYear] = useUrlState('year', '2025');
+  // Category Filter
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
 
   const filterDateRange = useMemo(() => {
     return {
@@ -56,6 +58,7 @@ export default function TransactionTable(
       const url = new URL('/api/transactions', baseUrl);
       if (searchValue) url.searchParams.append('search', debouncedSearch);
       if (isDownload) url.searchParams.append('download', 'true');
+      if (categoryFilter.length > 0) url.searchParams.append('category', categoryFilter.join(','));
       url.searchParams.append('page', currentPage.toString());
       url.searchParams.append('page_size', perPage);
       url.searchParams.append('start_date', filterDateRange.start);
@@ -84,7 +87,15 @@ export default function TransactionTable(
   }
 
   const { data: transactionResponse, isLoading } = useQuery<TransactionsResponse>({
-    queryKey: ['transactions', currentPage, filterYear, perPage, debouncedSearch, isDownload],
+    queryKey: [
+      'transactions',
+      currentPage,
+      filterYear,
+      perPage,
+      debouncedSearch,
+      isDownload,
+      categoryFilter,
+    ],
     queryFn: fetchTransactions,
     enabled: !editable,
     placeholderData: keepPreviousData,
@@ -145,6 +156,20 @@ export default function TransactionTable(
     [onUpdateData]
   );
 
+  function handleFilterChange(filters: Record<string, string[]>) {
+    // Currently only category filter is implemented
+    // Can be extended to other filters as needed
+    const categoryFilters = filters['category'] || [];
+    if (categoryFilters.length > 0) {
+      setCategoryFilter(categoryFilters);
+      // Note: This filtering does not affect pagination in editable mode
+      // For simplicity, we just update the current page to 1
+      setCurrentPage(1);
+    } else {
+      setCategoryFilter([]);
+    }
+  }
+
   return (
     <>
       {transactionResponse && !editable && (
@@ -168,6 +193,9 @@ export default function TransactionTable(
             searchValue={searchValue}
             onSearchChange={setSearchValue}
             onDownloadClick={() => setIsDownload(true)}
+            onFilterChange={(filters) => {
+              handleFilterChange(filters);
+            }}
           />
         }
         bottomContent={

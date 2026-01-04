@@ -9,6 +9,7 @@ import {
   DropdownItem,
 } from '@heroui/react';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
+import { FilterDropdown } from './FilterDropdown';
 
 export type TransactionTableTopContentProps = {
   selectedYear: string;
@@ -16,6 +17,7 @@ export type TransactionTableTopContentProps = {
   onYearChange: (year: string) => void;
   onSearchChange: (search: string) => void;
   onDownloadClick: () => void;
+  onFilterChange: (filters: Record<string, string[]>) => void;
 };
 
 const YEAR_FILTER_OPTIONS = [
@@ -30,6 +32,7 @@ export function TransactionTableTopContent({
   onYearChange,
   onSearchChange,
   onDownloadClick,
+  onFilterChange,
 }: TransactionTableTopContentProps) {
   return (
     <section className="flex justify-between items-center p-6 border-b border-neutral-200">
@@ -50,6 +53,7 @@ export function TransactionTableTopContent({
         >
           {(year) => <SelectItem>{year.label}</SelectItem>}
         </Select>
+        <FilterDropdown filters={{}} onFilterChange={onFilterChange} />
         <Dropdown>
           <DropdownTrigger>
             <Button isIconOnly size="sm" variant="light" color="primary">

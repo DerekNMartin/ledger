@@ -153,11 +153,13 @@ export function applyTransactionFilters(
   query: TransactionsFilterBuilder,
   searchParameters: URLSearchParams
 ): TransactionsFilterBuilder {
+  // Search Filter
   const searchString = searchParameters.get('search');
   if (searchString) {
     query = query.or(`name.ilike.%${searchString}%,description.ilike.%${searchString}%`);
   }
 
+  // Date Range Filter
   const startDateString = searchParameters.get('start_date');
   const endDateString = searchParameters.get('end_date');
   if (startDateString) {
@@ -165,6 +167,16 @@ export function applyTransactionFilters(
   }
   if (endDateString) {
     query = query.lte('date', endDateString);
+  }
+
+  // Apply Category Filter (supports single or comma-separated multiple values)
+  const categoryFilterString = searchParameters.get('category');
+  if (categoryFilterString) {
+    // Split comma-separated string into an array (e.g., "groceries,bills" -> ["groceries", "bills"])
+    const categoriesToFilter = categoryFilterString.split(',');
+    if (categoriesToFilter.length > 0) {
+      query = query.in('category', categoriesToFilter);
+    }
   }
 
   return query;

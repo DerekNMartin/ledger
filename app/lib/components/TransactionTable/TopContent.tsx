@@ -1,20 +1,11 @@
-import {
-  Button,
-  Dropdown,
-  DropdownTrigger,
-  Input,
-  Select,
-  SelectItem,
-  DropdownMenu,
-  DropdownItem,
-} from '@heroui/react';
+import { Button, Dropdown, Input, Select, ListBox } from '@heroui/react';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { FilterDropdown } from './FilterDropdown';
 
 export type TransactionTableTopContentProps = {
   selectedYear: string;
   searchValue: string;
-  onYearChange: (year: string) => void;
+  onYearChange: (year: string | null) => void;
   onSearchChange: (search: string) => void;
   onDownloadClick: () => void;
   onFilterChange: (filters: Record<string, string[]>) => void;
@@ -37,35 +28,44 @@ export function TransactionTableTopContent({
   return (
     <section className="flex justify-between items-center py-6 border-b border-neutral-200">
       <Input
-        classNames={{
-          base: 'max-w-sm',
-          input: 'outline-0',
-        }}
+        className={'max-w-sm outline-0'}
         placeholder="Search"
         value={searchValue}
-        onValueChange={onSearchChange}
+        onChange={(event) => onSearchChange(event.target.value)}
       />
       <div className="flex gap-4 items-center flex-1 justify-end">
         <Select
           className="max-w-24 shrink-0"
           items={YEAR_FILTER_OPTIONS}
-          selectedKeys={[selectedYear]}
-          onChange={(event) => onYearChange(event.target.value)}
+          value={selectedYear}
+          onChange={(value) => (typeof value === 'string' ? onYearChange(value) : null)}
         >
-          {(year) => <SelectItem>{year.label}</SelectItem>}
+          <Select.Trigger>
+            <Select.Value />
+            <Select.Indicator />
+          </Select.Trigger>
+          <Select.Popover>
+            <ListBox>
+              {YEAR_FILTER_OPTIONS.map(({ key, label }) => (
+                <ListBox.Item key={key} id={key} textValue={label}>
+                  {label}
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
+              ))}
+            </ListBox>
+          </Select.Popover>
         </Select>
         <FilterDropdown filters={{}} onFilterChange={onFilterChange} />
         <Dropdown>
-          <DropdownTrigger>
-            <Button isIconOnly variant="light" color="primary">
-              <EllipsisVerticalIcon className="w-5 h-5" />
-            </Button>
-          </DropdownTrigger>
-          <DropdownMenu aria-label="Static Actions">
-            <DropdownItem key="download" onClick={onDownloadClick}>
-              Download
-            </DropdownItem>
-          </DropdownMenu>
+          <Button isIconOnly variant="primary">
+            <EllipsisVerticalIcon className="w-5 h-5" />
+          </Button>
+          <Dropdown.Menu
+            aria-label="Static Actions"
+            onAction={(key) => (key === 'download' ? onDownloadClick : null)}
+          >
+            <Dropdown.Item key="download">Download</Dropdown.Item>
+          </Dropdown.Menu>
         </Dropdown>
       </div>
     </section>

@@ -2,8 +2,7 @@ import type { Transaction } from '@/lib/supabase/types';
 
 import { useRef, useState } from 'react';
 
-import { Button } from '@heroui/react';
-import { Input } from '@heroui/react';
+import { Button, Input } from '@heroui/react';
 import { useAccounts } from '@/lib/hooks/useAccounts';
 
 import AccountSelect from '@/lib/components/AccountSelect';
@@ -57,8 +56,10 @@ export default function TransactionUpload({
       <AccountSelect
         accounts={accounts}
         className="w-xs"
-        selectedKeys={[selectedAccount || '']}
-        onSelectionChange={(selection) => setSelectedAccount(selection.currentKey)}
+        value={selectedAccount || ''}
+        onChange={(selection) =>
+          typeof selection === 'string' ? setSelectedAccount(selection) : null
+        }
       />
       <Input
         ref={fileInput}
@@ -69,9 +70,8 @@ export default function TransactionUpload({
       />
       <Button
         onPress={uploadFile}
-        color="primary"
-        isLoading={isLoading}
-        variant="bordered"
+        variant="primary"
+        isPending={isLoading}
         isDisabled={!selectedAccount}
       >
         Upload File

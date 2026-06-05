@@ -11,7 +11,7 @@ export default function TransactionPage() {
       <section className="flex justify-between items-center py-8 pt-0 flex-none">
         <h2 className="font-semibold text-2xl">Transactions</h2>
         <Link href="/transactions/new">
-          <Button color="primary" size="sm">
+          <Button variant="primary" size="sm">
             Add Transactions
           </Button>
         </Link>

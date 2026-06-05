@@ -1,13 +1,4 @@
-import {
-  Button,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-  DropdownSection,
-  Selection,
-  SharedSelection,
-} from '@heroui/react';
+import { Button, Dropdown, Selection } from '@heroui/react';
 import { FunnelIcon } from '@heroicons/react/24/outline';
 import { CATEGORIES } from '@/lib/components/CategorySelect';
 import { useState } from 'react';
@@ -17,10 +8,10 @@ export type FilterDropdownProps = {
   onFilterChange: (filters: Record<string, string[]>) => void;
 };
 
-export function FilterDropdown({ filters, onFilterChange }: FilterDropdownProps) {
+export function FilterDropdown({ onFilterChange }: FilterDropdownProps) {
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
 
-  function handleSelectionChange(keys: SharedSelection) {
+  function handleSelectionChange(keys: Selection) {
     setSelectedKeys(keys);
     onFilterChange({
       category: Array.from(keys)
@@ -31,26 +22,32 @@ export function FilterDropdown({ filters, onFilterChange }: FilterDropdownProps)
 
   return (
     <Dropdown>
-      <DropdownTrigger>
-        <Button variant="flat">
-          <FunnelIcon className="w-4 h-4" />
-          Filter
-        </Button>
-      </DropdownTrigger>
-      <DropdownMenu
-        aria-label="Static Actions"
-        closeOnSelect={false}
-        selectedKeys={selectedKeys}
-        selectionMode="multiple"
-        onSelectionChange={handleSelectionChange}
-        className="max-h-52 overflow-y-auto scrollbar-thin"
-      >
-        <DropdownSection title="Category">
-          {CATEGORIES.map((category) => (
-            <DropdownItem key={`category-${category.key}`}>{category.label}</DropdownItem>
-          ))}
-        </DropdownSection>
-      </DropdownMenu>
+      <Button variant="secondary">
+        <FunnelIcon className="w-4 h-4" />
+        Filter
+      </Button>
+      <Dropdown.Popover>
+        <Dropdown.Menu
+          aria-label="Static Actions"
+          selectedKeys={selectedKeys}
+          selectionMode="multiple"
+          onSelectionChange={handleSelectionChange}
+          className="max-h-52 overflow-y-auto scrollbar-thin"
+        >
+          <Dropdown.Section>
+            {CATEGORIES.map((category) => (
+              <Dropdown.Item
+                key={`category-${category.key}`}
+                id={category.key}
+                textValue={category.label}
+              >
+                {category.label}
+                <Dropdown.ItemIndicator />
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Section>
+        </Dropdown.Menu>
+      </Dropdown.Popover>
     </Dropdown>
   );
 }

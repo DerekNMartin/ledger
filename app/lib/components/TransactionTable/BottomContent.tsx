@@ -1,4 +1,4 @@
-import { Pagination, Select, SelectItem } from '@heroui/react';
+import { Pagination, Select, ListBox } from '@heroui/react';
 
 export type TransactionTableBottomContentProps = {
   totalEntries: number;
@@ -32,19 +32,51 @@ export function TransactionTableBottomContent({
         {/* Page Size Controls */}
         <Select
           className="max-w-20"
-          size="sm"
-          items={PAGE_SIZE_OPTIONS}
-          selectedKeys={[perPage]}
-          onChange={(event) => onPerPageChange(event.target.value)}
+          value={perPage}
+          onChange={(value) => (typeof value === 'string' ? onPerPageChange(value) : null)}
         >
-          {(option) => <SelectItem>{option.label}</SelectItem>}
+          <Select.Trigger>
+            <Select.Value />
+            <Select.Indicator />
+          </Select.Trigger>
+          <Select.Popover>
+            <ListBox>
+              {PAGE_SIZE_OPTIONS.map(({ key, label }) => (
+                <ListBox.Item key={key} id={key} textValue={label}>
+                  {label}
+                  <ListBox.ItemIndicator />
+                </ListBox.Item>
+              ))}
+            </ListBox>
+          </Select.Popover>
         </Select>
-        <Pagination
-          showControls
-          page={currentPage}
-          total={totalPages}
-          onChange={(page) => onPageChange(page)}
-        />
+        <Pagination>
+          <Pagination.Content>
+            <Pagination.Item>
+              <Pagination.Previous
+                isDisabled={currentPage === 1}
+                onPress={() => onPageChange(Math.max(1, currentPage - 1))}
+              >
+                <Pagination.PreviousIcon />
+              </Pagination.Previous>
+            </Pagination.Item>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <Pagination.Item key={p}>
+                <Pagination.Link isActive={currentPage === p} onPress={() => onPageChange(p)}>
+                  {p}
+                </Pagination.Link>
+              </Pagination.Item>
+            ))}
+            <Pagination.Item>
+              <Pagination.Next
+                isDisabled={currentPage === totalPages}
+                onPress={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+              >
+                <Pagination.NextIcon />
+              </Pagination.Next>
+            </Pagination.Item>
+          </Pagination.Content>
+        </Pagination>
       </div>
     </div>
   );

@@ -1,13 +1,13 @@
 import type { Transaction } from '@/lib/supabase/types';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { TransactionsResponse } from '@/api/transactions/route';
-import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from '@heroui/react';
+import { Table } from '@heroui/react';
 import { useMemo, useState, useCallback } from 'react';
 
 import { TransactionTableBottomContent } from '@/lib/components/TransactionTable/BottomContent';
 import { TransactionTableTopContent } from '@/lib/components/TransactionTable/TopContent';
 
-import useRenderCell from '@/transactions/useRenderCell';
+import { TransactionTableCell } from '@/transactions/TransactionTableCell';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import { useUrlState } from '@/lib/hooks/useUrlState';
 import { TransactionsSummary } from '@/lib/components/TransactionTable/TransactionsSummary';
@@ -31,8 +31,6 @@ const columns: { name: string; id: keyof Partial<Transaction> }[] = [
 export default function TransactionTable(
   { transactions, editable, onUpdateData }: TransactionTableProps = { editable: false }
 ) {
-  const renderCell = useRenderCell();
-
   const [isDownload, setIsDownload] = useState(false);
   // Search
   const [searchValue, setSearchValue] = useState('');
@@ -175,31 +173,68 @@ export default function TransactionTable(
       {transactionResponse && !editable && (
         <TransactionsSummary summary={transactionResponse?.summary} />
       )}
-      <Table
-        isHeaderSticky
-        aria-label="Transaction Data Table"
-        shadow="none"
-        topContentPlacement="outside"
-        bottomContentPlacement="outside"
-        radius="lg"
-        classNames={{
-          base: 'flex-1 overflow-hidden', // The outer container
-          wrapper: 'flex-1 overflow-auto scrollbar py-0 pl-0', // The actual scrollable area for <tbody>
-          tr: 'h-14 border-t border-neutral-100 first:border-0', // Table rows
-        }}
-        topContent={
-          <TransactionTableTopContent
-            selectedYear={filterYear}
-            onYearChange={setFilterYear}
-            searchValue={searchValue}
-            onSearchChange={setSearchValue}
-            onDownloadClick={() => setIsDownload(true)}
-            onFilterChange={(filters) => {
-              handleFilterChange(filters);
-            }}
-          />
-        }
-        bottomContent={
+      <Table aria-label="Transaction Data Table" className="flex-1 overflow-hidden">
+        <TransactionTableTopContent
+          selectedYear={filterYear}
+          onYearChange={setFilterYear}
+          searchValue={searchValue}
+          onSearchChange={setSearchValue}
+          onDownloadClick={() => setIsDownload(true)}
+          onFilterChange={(filters) => {
+            handleFilterChange(filters);
+          }}
+        />
+        <Table.ScrollContainer className="flex-1 overflow-auto scrollbar py-0 pl-0">
+          <Table.Content>
+            <Table.Header columns={columns} className={'sticky top-0'}>
+              {(column) => (
+                <Table.Column
+                  isRowHeader={true}
+                  id={column.id}
+                  className={[
+                    'capitalize',
+                    ...(['amount', 'category', 'is_reoccuring'].includes(column.id)
+                      ? ['text-right']
+                      : ['text-left']),
+                  ].join(' ')}
+                >
+                  {column.name}
+                </Table.Column>
+              )}
+            </Table.Header>
+            <Table.Body
+              items={
+                transactions && editable ? filteredTransactions : transactionResponse?.data || []
+              }
+              renderEmptyState={() =>
+                searchValue ? (
+                  <p>No matching transactions found.</p>
+                ) : (
+                  <p>Upload your trasactions to view and modify them.</p>
+                )
+              }
+            >
+              {(transaction) => (
+                <Table.Row
+                  id={transaction.id}
+                  className="h-14 border-t border-neutral-100 first:border-0"
+                >
+                  {columns.map((column) => (
+                    <Table.Cell key={column.id}>
+                      <TransactionTableCell
+                        transaction={transaction}
+                        columnKey={column.id}
+                        editable={editable}
+                        onUpdateData={(rowData) => handleUpdateData(transaction.id || '', rowData)}
+                      />
+                    </Table.Cell>
+                  ))}
+                </Table.Row>
+              )}
+            </Table.Body>
+          </Table.Content>
+        </Table.ScrollContainer>
+        <Table.Footer>
           <TransactionTableBottomContent
             totalEntries={totalEntries}
             perPage={perPage}
@@ -208,40 +243,7 @@ export default function TransactionTable(
             onPageChange={setCurrentPage}
             onPerPageChange={setPerPage}
           />
-        }
-      >
-        <TableHeader columns={columns}>
-          {(column) => (
-            <TableColumn
-              key={column.id}
-              className="capitalize"
-              align={['amount', 'category', 'is_reoccuring'].includes(column.id) ? 'end' : 'start'}
-            >
-              {column.name}
-            </TableColumn>
-          )}
-        </TableHeader>
-        <TableBody
-          isLoading={isLoading}
-          items={transactions && editable ? filteredTransactions : transactionResponse?.data || []}
-          emptyContent={
-            searchValue
-              ? 'No matching transactions found.'
-              : 'Upload your trasactions to view and modify them.'
-          }
-        >
-          {(transaction) => (
-            <TableRow key={transaction.id}>
-              {(columnKey) => (
-                <TableCell>
-                  {renderCell(transaction, columnKey, editable, (rowData) =>
-                    handleUpdateData(transaction.id || '', rowData)
-                  )}
-                </TableCell>
-              )}
-            </TableRow>
-          )}
-        </TableBody>
+        </Table.Footer>
       </Table>
     </>
   );

@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@plugin "./hero.ts";
+@import "@heroui/styles";
 
 /* Vercel's build environment sometimes places node_modules 
    at a different level during the optimization phase.

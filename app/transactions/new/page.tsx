@@ -12,7 +12,7 @@ import type { Transaction } from '@/lib/supabase/types';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Checkbox } from '@heroui/react';
+import { Button, Checkbox, Label } from '@heroui/react';
 
 import TransactionTable from '@/transactions/TransactionTable';
 import TransactionUpload from '@/transactions/new/TransactionUpload';
@@ -66,13 +66,19 @@ export default function TransactionsNew() {
 
       <section className="w-full flex justify-between items-center py-6 border-t border-neutral-200">
         <Checkbox
+          id="apply-similar"
           className="self-end"
           isSelected={enableApplyAll}
-          onValueChange={setEnableApplyAll}
+          onChange={setEnableApplyAll}
         >
-          Apply changes to similar transactions
+          <Checkbox.Control>
+            <Checkbox.Indicator />
+          </Checkbox.Control>
+          <Checkbox.Content>
+            <Label htmlFor="apply-similar">Apply changes to similar transactions</Label>
+          </Checkbox.Content>
         </Checkbox>
-        <Button color="primary" onPress={handleSaveTransactions} disabled={!transactionData}>
+        <Button variant="primary" onPress={handleSaveTransactions} disabled={!transactionData}>
           Save Transactions
         </Button>
       </section>

@@ -20,32 +20,32 @@ export function TransactionsSummary({ summary }: TransactionsSummaryProps) {
     if (!summary) return null;
     return {
       totalSpent: {
-        label: 'Total Spent',
+        label: 'Expenses',
         icon: ArrowUpTrayIcon,
         value: summary.totalSpent || 0,
       },
       totalIncome: {
-        label: 'Total Income',
+        label: 'Income',
         icon: ArrowDownTrayIcon,
         value: summary.totalIncome || 0,
       },
       netCashFlow: {
-        label: 'Net Cash Flow',
+        label: 'Profit',
         icon: WalletIcon,
         value: summary.netCashFlow || 0,
       },
       fixedCosts: {
-        label: 'Recurring Costs',
+        label: 'Recurring',
         icon: ArrowPathIcon,
         value: summary.fixedCosts || 0,
       },
       variableCosts: {
-        label: 'Variable Costs',
+        label: 'Variable',
         icon: CreditCardIcon,
         value: summary.variableCosts || 0,
       },
       topCategory: {
-        label: 'Top Spending Category',
+        label: 'Top Category',
         icon: TagIcon,
         value: summary.topCategory || 'N/A',
       },
@@ -53,15 +53,23 @@ export function TransactionsSummary({ summary }: TransactionsSummaryProps) {
   }, [summary]);
 
   return (
-    <section className="flex flex-none gap-4 p-6 border-b border-neutral-200 flex-wrap">
+    <section className="grid grid-cols-3 grid-rows-2 gap-4 py-8 pt-0 border-b border-neutral-200 flex-wrap">
       {summaryData &&
         Object.values(summaryData).map((data) => (
-          <Card key={data.label} className="flex-1 p-4 border " radius="sm" shadow="none">
-            <div className="text-sm text-gray-600 mb-2 flex items-center gap-2">
-              <data.icon className="w-4 h-4 shrink-0" />
-              <span className="font-medium">{data.label}</span>
+          <Card
+            key={data.label}
+            className="flex-1 p-3 border-neutral-200 border gap-3 shrink-0"
+            radius="lg"
+            shadow="none"
+          >
+            <div className="flex gap-2 items-center">
+              <span className="bg-violet-50 rounded-xl p-3 w-fit">
+                <data.icon className="w-4 h-4 shrink-0 text-violet-600" strokeWidth={2} />
+              </span>
+              <div className="text-neutral-500 text-sm font-medium">{data.label}</div>
             </div>
-            <div className="text-2xl font-semibold capitalize">
+
+            <div className="text-xl font-semibold capitalize">
               {typeof data.value === 'number'
                 ? data.value.toLocaleString('en-US', {
                     style: 'currency',

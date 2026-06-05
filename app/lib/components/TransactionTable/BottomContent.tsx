@@ -24,9 +24,9 @@ export function TransactionTableBottomContent({
   onPageChange,
 }: TransactionTableBottomContentProps) {
   return (
-    <div className="w-full flex justify-between items-center p-6 border-t border-neutral-200">
+    <div className="w-full flex justify-between items-center py-6 border-t border-neutral-200">
       <p>
-        Total: <strong>{totalEntries}</strong> transactions
+        <strong>{totalEntries}</strong> transactions
       </p>
       <div className="flex gap-4 flex-1 justify-end items-center">
         {/* Page Size Controls */}
@@ -41,7 +41,6 @@ export function TransactionTableBottomContent({
         </Select>
         <Pagination
           showControls
-          size="sm"
           page={currentPage}
           total={totalPages}
           onChange={(page) => onPageChange(page)}

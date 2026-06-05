@@ -14,7 +14,7 @@ export default function SignoutButton() {
   }
 
   return isAuth ? (
-    <Button variant="bordered" onPress={handleSignOut}>
+    <Button variant="light" onPress={handleSignOut}>
       Sign Out
     </Button>
   ) : null;

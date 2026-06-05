@@ -53,15 +53,18 @@ export default function TransactionsNew() {
   }
 
   return (
-    <main className="flex flex-col h-[calc(100vh-113px)] overflow-hidden">
-      <section className="flex justify-between items-center flex-none p-6 pt-0 border-b border-neutral-200">
+    <div className="flex flex-col h-full">
+      <section className="flex justify-between items-center flex-none py-6 pt-0 border-b border-neutral-200">
         <h2 className="font-bold text-2xl">Upload Transactions</h2>
       </section>
-      <section className="flex flex-col gap-4 border-b border-neutral-200 p-6 flex-none">
+
+      <section className="flex flex-col gap-4 border-b border-neutral-200 py-6 flex-none">
         <TransactionUpload onUpload={setTransactionData} />
       </section>
+
       <TransactionTable transactions={transactionData} onUpdateData={updateData} editable />
-      <section className="w-full flex justify-between items-center p-6 border-t border-neutral-200">
+
+      <section className="w-full flex justify-between items-center py-6 border-t border-neutral-200">
         <Checkbox
           className="self-end"
           isSelected={enableApplyAll}
@@ -73,6 +76,6 @@ export default function TransactionsNew() {
           Save Transactions
         </Button>
       </section>
-    </main>
+    </div>
   );
 }

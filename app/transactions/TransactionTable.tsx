@@ -176,16 +176,17 @@ export default function TransactionTable(
         <TransactionsSummary summary={transactionResponse?.summary} />
       )}
       <Table
-        classNames={{
-          base: 'flex-1 overflow-hidden', // The outer container
-          wrapper: 'flex-1 overflow-auto scrollbar py-0', // The actual scrollable area for <tbody>
-        }}
         isHeaderSticky
         aria-label="Transaction Data Table"
         shadow="none"
-        isStriped
         topContentPlacement="outside"
         bottomContentPlacement="outside"
+        radius="lg"
+        classNames={{
+          base: 'flex-1 overflow-hidden', // The outer container
+          wrapper: 'flex-1 overflow-auto scrollbar py-0 pl-0', // The actual scrollable area for <tbody>
+          tr: 'h-14 border-t border-neutral-100 first:border-0', // Table rows
+        }}
         topContent={
           <TransactionTableTopContent
             selectedYear={filterYear}

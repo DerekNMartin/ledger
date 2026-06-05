@@ -32,7 +32,7 @@ export function FilterDropdown({ filters, onFilterChange }: FilterDropdownProps)
   return (
     <Dropdown>
       <DropdownTrigger>
-        <Button size="sm" variant="bordered">
+        <Button variant="flat">
           <FunnelIcon className="w-4 h-4" />
           Filter
         </Button>

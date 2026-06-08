@@ -52,16 +52,15 @@ export default function TransactionUpload({
   }
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 w-full">
       <AccountSelect
         accounts={accounts}
         className="w-xs"
         value={selectedAccount || ''}
-        onChange={(selection) =>
-          typeof selection === 'string' ? setSelectedAccount(selection) : null
-        }
+        onChange={(selection) => setSelectedAccount(selection?.toString())}
       />
       <Input
+        className={'flex-1 shadow-none border border-neutral-200'}
         ref={fileInput}
         multiple
         type="file"

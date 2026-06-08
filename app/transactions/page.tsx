@@ -6,7 +6,7 @@ import { Button } from '@heroui/react';
 
 export default function TransactionPage() {
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full pb-8">
       {/* Page Title Bar */}
       <section className="flex justify-between items-center py-8 pt-0 flex-none">
         <h2 className="font-semibold text-2xl">Transactions</h2>

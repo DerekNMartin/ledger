@@ -53,12 +53,12 @@ export function TransactionsSummary({ summary }: TransactionsSummaryProps) {
   }, [summary]);
 
   return (
-    <section className="grid grid-cols-3 grid-rows-2 gap-4 py-8 pt-0 border-b border-neutral-200 flex-wrap">
+    <section className="grid grid-cols-3 grid-rows-2 gap-4 py-8 pt-0 flex-wrap">
       {summaryData &&
         Object.values(summaryData).map((data) => (
           <Card
             key={data.label}
-            className="flex-1 p-3 border-neutral-200 border gap-3 shrink-0 rounded-lg"
+            className="flex-1 p-3 border-neutral-200 border gap-3 shrink-0 shadow-none rounded-2xl"
           >
             <div className="flex gap-2 items-center">
               <span className="bg-violet-50 rounded-xl p-3 w-fit">

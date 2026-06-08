@@ -32,9 +32,9 @@ function reverseNumSignButton(amount: number, callback: (amount: number) => void
   return (
     <Button
       onPress={() => callback(-amount)}
-      variant="tertiary"
+      variant="outline"
       className="w-6 h-6 aspect-square min-w-6 p-1 ml-2 text-xs font-bold"
-      isIconOnly={true}
+      isIconOnly
     >
       {isPositive ? (
         <MinusIcon className="w-full h-full" />
@@ -83,8 +83,7 @@ export function TransactionTableCell({
       return editable ? (
         <Input
           key={transaction.name || transaction.id} // Ensure input is re-rendered when name changes
-          className="min-w-44"
-          variant="secondary"
+          className="min-w-44 shadow-none border border-neutral-200"
           placeholder="Transaction name"
           defaultValue={transaction.name || ''}
           onBlur={(event) => {

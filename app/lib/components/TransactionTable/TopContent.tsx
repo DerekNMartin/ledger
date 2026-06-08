@@ -26,30 +26,30 @@ export function TransactionTableTopContent({
   onFilterChange,
 }: TransactionTableTopContentProps) {
   return (
-    <section className="flex justify-between items-center py-6 border-b border-neutral-200">
+    <section className="flex justify-between items-center px-2 py-4 h-fit">
       <Input
-        className={'max-w-sm outline-0'}
+        className="w-sm shadow-none border border-neutral-200"
         placeholder="Search"
         value={searchValue}
         onChange={(event) => onSearchChange(event.target.value)}
       />
       <div className="flex gap-4 items-center flex-1 justify-end">
         <Select
-          className="max-w-24 shrink-0"
+          className="shrink-0 w-32"
           items={YEAR_FILTER_OPTIONS}
           value={selectedYear}
           onChange={(value) => (typeof value === 'string' ? onYearChange(value) : null)}
         >
-          <Select.Trigger>
+          <Select.Trigger className="shadow-none border border-neutral-200">
             <Select.Value />
             <Select.Indicator />
           </Select.Trigger>
           <Select.Popover>
             <ListBox>
               {YEAR_FILTER_OPTIONS.map(({ key, label }) => (
-                <ListBox.Item key={key} id={key} textValue={label}>
-                  {label}
+                <ListBox.Item key={key} id={key}>
                   <ListBox.ItemIndicator />
+                  {label}
                 </ListBox.Item>
               ))}
             </ListBox>
@@ -57,15 +57,16 @@ export function TransactionTableTopContent({
         </Select>
         <FilterDropdown filters={{}} onFilterChange={onFilterChange} />
         <Dropdown>
-          <Button isIconOnly variant="primary">
+          <Button isIconOnly variant="ghost">
             <EllipsisVerticalIcon className="w-5 h-5" />
           </Button>
-          <Dropdown.Menu
-            aria-label="Static Actions"
-            onAction={(key) => (key === 'download' ? onDownloadClick : null)}
-          >
-            <Dropdown.Item key="download">Download</Dropdown.Item>
-          </Dropdown.Menu>
+          <Dropdown.Popover placement="bottom right">
+            <Dropdown.Menu aria-label="Static Actions">
+              <Dropdown.Item key="download" onClick={onDownloadClick}>
+                Download
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown.Popover>
         </Dropdown>
       </div>
     </section>

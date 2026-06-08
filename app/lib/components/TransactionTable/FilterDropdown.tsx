@@ -14,25 +14,26 @@ export function FilterDropdown({ onFilterChange }: FilterDropdownProps) {
   function handleSelectionChange(keys: Selection) {
     setSelectedKeys(keys);
     onFilterChange({
-      category: Array.from(keys)
-        .filter((key) => key.toString().startsWith('category-'))
-        .map((key) => key.toString().replace('category-', '')),
+      category: Array.from(keys).map((key) => key.toString()),
     });
   }
 
   return (
     <Dropdown>
-      <Button variant="secondary">
+      <Button
+        variant="outline"
+        className="rounded-lg border-neutral-200 bg-white hover:bg-neutral-100"
+      >
         <FunnelIcon className="w-4 h-4" />
         Filter
       </Button>
-      <Dropdown.Popover>
+      <Dropdown.Popover placement="bottom right">
         <Dropdown.Menu
           aria-label="Static Actions"
           selectedKeys={selectedKeys}
           selectionMode="multiple"
           onSelectionChange={handleSelectionChange}
-          className="max-h-52 overflow-y-auto scrollbar-thin"
+          className="max-h-60 overflow-y-auto scrollbar-thin"
         >
           <Dropdown.Section>
             {CATEGORIES.map((category) => (

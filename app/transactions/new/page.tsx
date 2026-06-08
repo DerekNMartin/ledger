@@ -54,17 +54,17 @@ export default function TransactionsNew() {
 
   return (
     <div className="flex flex-col h-full">
-      <section className="flex justify-between items-center flex-none py-6 pt-0 border-b border-neutral-200">
-        <h2 className="font-bold text-2xl">Upload Transactions</h2>
+      <section className="flex justify-between items-center flex-none py-6 pt-0">
+        <h2 className="font-semibold text-2xl">Upload Transactions</h2>
       </section>
 
-      <section className="flex flex-col gap-4 border-b border-neutral-200 py-6 flex-none">
+      <section className="flex gap-4 pb-6 flex-none justify-end">
         <TransactionUpload onUpload={setTransactionData} />
       </section>
 
       <TransactionTable transactions={transactionData} onUpdateData={updateData} editable />
 
-      <section className="w-full flex justify-between items-center py-6 border-t border-neutral-200">
+      <section className="w-full flex justify-between items-center py-6">
         <Checkbox
           id="apply-similar"
           className="self-end"
@@ -78,7 +78,7 @@ export default function TransactionsNew() {
             <Label htmlFor="apply-similar">Apply changes to similar transactions</Label>
           </Checkbox.Content>
         </Checkbox>
-        <Button variant="primary" onPress={handleSaveTransactions} disabled={!transactionData}>
+        <Button variant="primary" onPress={handleSaveTransactions} isDisabled={!transactionData}>
           Save Transactions
         </Button>
       </section>

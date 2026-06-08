@@ -7,7 +7,7 @@ import { useMemo, useState, useCallback } from 'react';
 import { TransactionTableBottomContent } from '@/lib/components/TransactionTable/BottomContent';
 import { TransactionTableTopContent } from '@/lib/components/TransactionTable/TopContent';
 
-import { TransactionTableCell } from '@/transactions/TransactionTableCell';
+import { TransactionTableCell } from '@/lib/components/TransactionTable/TransactionTableCell';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import { useUrlState } from '@/lib/hooks/useUrlState';
 import { TransactionsSummary } from '@/lib/components/TransactionTable/TransactionsSummary';
@@ -173,7 +173,10 @@ export default function TransactionTable(
       {transactionResponse && !editable && (
         <TransactionsSummary summary={transactionResponse?.summary} />
       )}
-      <Table aria-label="Transaction Data Table" className="flex-1 overflow-hidden">
+      <Table
+        aria-label="Transaction Data Table"
+        className="flex flex-col w-full flex-1 min-h-0 h-full bg-neutral-100"
+      >
         <TransactionTableTopContent
           selectedYear={filterYear}
           onYearChange={setFilterYear}
@@ -184,19 +187,18 @@ export default function TransactionTable(
             handleFilterChange(filters);
           }}
         />
-        <Table.ScrollContainer className="flex-1 overflow-auto scrollbar py-0 pl-0">
-          <Table.Content>
-            <Table.Header columns={columns} className={'sticky top-0'}>
+        <Table.ScrollContainer className={'flex-1'}>
+          <Table.Content className="h-full">
+            <Table.Header columns={columns} className={'bg-neutral-100 sticky top-0 z-10'}>
               {(column) => (
                 <Table.Column
                   isRowHeader={true}
                   id={column.id}
-                  className={[
-                    'capitalize',
-                    ...(['amount', 'category', 'is_reoccuring'].includes(column.id)
-                      ? ['text-right']
-                      : ['text-left']),
-                  ].join(' ')}
+                  className={
+                    ['amount', 'category', 'is_reoccuring'].includes(column.id)
+                      ? 'text-right'
+                      : 'text-left'
+                  }
                 >
                   {column.name}
                 </Table.Column>
@@ -206,21 +208,20 @@ export default function TransactionTable(
               items={
                 transactions && editable ? filteredTransactions : transactionResponse?.data || []
               }
-              renderEmptyState={() =>
-                searchValue ? (
-                  <p>No matching transactions found.</p>
-                ) : (
-                  <p>Upload your trasactions to view and modify them.</p>
-                )
-              }
+              renderEmptyState={() => (
+                <div className="flex justify-center items-center">
+                  <p>
+                    {searchValue || categoryFilter.length > 0
+                      ? 'No matching transactions found.'
+                      : 'Upload your trasactions to view and modify them.'}
+                  </p>
+                </div>
+              )}
             >
               {(transaction) => (
-                <Table.Row
-                  id={transaction.id}
-                  className="h-14 border-t border-neutral-100 first:border-0"
-                >
+                <Table.Row id={transaction.id} className={'h-auto'}>
                   {columns.map((column) => (
-                    <Table.Cell key={column.id}>
+                    <Table.Cell key={column.id} className={'rounded-none h-auto'}>
                       <TransactionTableCell
                         transaction={transaction}
                         columnKey={column.id}

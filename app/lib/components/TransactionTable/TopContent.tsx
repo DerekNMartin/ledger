@@ -36,7 +36,6 @@ export function TransactionTableTopContent({
       <div className="flex gap-4 items-center flex-1 justify-end">
         <Select
           className="shrink-0 w-32"
-          items={YEAR_FILTER_OPTIONS}
           value={selectedYear}
           onChange={(value) => (typeof value === 'string' ? onYearChange(value) : null)}
         >

@@ -23,9 +23,9 @@ const columns: { name: string; id: keyof Partial<Transaction> }[] = [
   { name: 'Account', id: 'account_id' },
   { name: 'Name', id: 'name' },
   { name: 'Description', id: 'description' },
-  { name: 'Amount', id: 'amount' },
   { name: 'Category', id: 'category' },
   { name: 'Reoccuring', id: 'is_reoccuring' },
+  { name: 'Amount', id: 'amount' },
 ];
 
 export default function TransactionTable(
@@ -194,11 +194,7 @@ export default function TransactionTable(
                 <Table.Column
                   isRowHeader={true}
                   id={column.id}
-                  className={
-                    ['amount', 'category', 'is_reoccuring'].includes(column.id)
-                      ? 'text-right'
-                      : 'text-left'
-                  }
+                  className={column.id === 'amount' ? 'text-right' : 'text-left'}
                 >
                   {column.name}
                 </Table.Column>

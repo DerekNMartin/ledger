@@ -2,8 +2,7 @@ import type { Transaction } from '@/lib/supabase/types';
 
 import { useRef, useState } from 'react';
 
-import { Button } from '@heroui/react';
-import { Input } from '@heroui/react';
+import { Button, Input } from '@heroui/react';
 import { useAccounts } from '@/lib/hooks/useAccounts';
 
 import AccountSelect from '@/lib/components/AccountSelect';
@@ -53,14 +52,15 @@ export default function TransactionUpload({
   }
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 w-full">
       <AccountSelect
         accounts={accounts}
         className="w-xs"
-        selectedKeys={[selectedAccount || '']}
-        onSelectionChange={(selection) => setSelectedAccount(selection.currentKey)}
+        value={selectedAccount || ''}
+        onChange={(selection) => setSelectedAccount(selection?.toString())}
       />
       <Input
+        className={'flex-1 shadow-none border border-neutral-200'}
         ref={fileInput}
         multiple
         type="file"
@@ -69,9 +69,8 @@ export default function TransactionUpload({
       />
       <Button
         onPress={uploadFile}
-        color="primary"
-        isLoading={isLoading}
-        variant="bordered"
+        variant="primary"
+        isPending={isLoading}
         isDisabled={!selectedAccount}
       >
         Upload File

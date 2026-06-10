@@ -3,20 +3,25 @@
 import Link from 'next/link';
 import TransactionTable from '@/transactions/TransactionTable';
 import { Button } from '@heroui/react';
+import { Suspense } from 'react';
 
-export default function TransactionNew() {
+export default function TransactionPage() {
   return (
-    <main className="flex flex-col h-[calc(100vh-113px)] overflow-hidden">
+    <div className="flex flex-col h-full pb-8">
       {/* Page Title Bar */}
-      <section className="flex justify-between items-center border-b border-neutral-200 p-6 pt-0 flex-none">
-        <h2 className="font-bold text-2xl">Transactions</h2>
+      <section className="flex justify-between items-center py-8 pt-0 flex-none">
+        <h2 className="font-semibold text-2xl">Transactions</h2>
         <Link href="/transactions/new">
-          <Button color="primary">Import Transactions</Button>
+          <Button variant="primary" size="sm">
+            Add Transactions
+          </Button>
         </Link>
       </section>
       <div className="flex-1 overflow-hidden flex flex-col">
-        <TransactionTable />
+        <Suspense fallback={<p>Unable to load transactions.</p>}>
+          <TransactionTable />
+        </Suspense>
       </div>
-    </main>
+    </div>
   );
 }

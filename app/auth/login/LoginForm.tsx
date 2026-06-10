@@ -1,10 +1,9 @@
 'use client';
 
 import { useSupabaseContext } from '@/auth/context/AuthContext';
-import { Button, Input } from '@heroui/react';
+import { Button, Input, Card, TextField, Label } from '@heroui/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Card, CardHeader, CardBody } from '@heroui/react';
 
 export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   const [email, setEmail] = useState('');
@@ -36,40 +35,35 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
   return (
     <div className={'flex flex-col gap-6' + className} {...props}>
       <Card className="min-w-lg p-4">
-        <CardHeader className="flex flex-col gap-2 items-start">
+        <Card.Header className="flex flex-col gap-2 items-start">
           <h3 className="text-xl">Login</h3>
-        </CardHeader>
-        <CardBody>
+        </Card.Header>
+        <Card.Content>
           <form onSubmit={handleLogin}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Input
-                  label="Email"
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
+                <TextField type="email" isRequired>
+                  <Label>Email</Label>
+                  <Input
+                    placeholder="m@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </TextField>
               </div>
               <div className="grid gap-2">
-                <Input
-                  label="Password"
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                <TextField type="password" isRequired>
+                  <Label>Password</Label>
+                  <Input value={password} onChange={(e) => setPassword(e.target.value)} />
+                </TextField>
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading} color="primary">
+              <Button type="submit" className="w-full" isDisabled={isLoading} variant="primary">
                 {isLoading ? 'Logging in...' : 'Login'}
               </Button>
             </div>
           </form>
-        </CardBody>
+        </Card.Content>
       </Card>
     </div>
   );

@@ -1,5 +1,4 @@
-import { Select, SelectItem } from '@heroui/react';
-import type { SelectProps } from '@heroui/react';
+import { Select, ListBox, type SelectProps } from '@heroui/react';
 
 export const CATEGORIES = [
   { key: 'bills', label: 'Bills' },
@@ -20,12 +19,24 @@ export const CATEGORIES = [
   { key: 'transport', label: 'Transport' },
 ];
 
-export default function CategorySelect(props: Omit<SelectProps, 'children'>) {
+export default function CategorySelect(
+  props: Omit<SelectProps<(typeof CATEGORIES)[0]>, 'children'>
+) {
   return (
-    <Select {...props} aria-label="Category Selection" variant="bordered">
-      {CATEGORIES.map(({ key, label }) => (
-        <SelectItem key={key}>{label}</SelectItem>
-      ))}
+    <Select {...props} aria-label="Category Selection" variant="primary">
+      <Select.Trigger className={'shadow-none border border-neutral-200'}>
+        <Select.Value />
+        <Select.Indicator />
+      </Select.Trigger>
+      <Select.Popover>
+        <ListBox>
+          {CATEGORIES.map(({ key, label }) => (
+            <ListBox.Item key={key} id={key} textValue={label}>
+              {label} <ListBox.ItemIndicator />
+            </ListBox.Item>
+          ))}
+        </ListBox>
+      </Select.Popover>
     </Select>
   );
 }

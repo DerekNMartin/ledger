@@ -1,20 +1,11 @@
-import {
-  Button,
-  Dropdown,
-  DropdownTrigger,
-  Input,
-  Select,
-  SelectItem,
-  DropdownMenu,
-  DropdownItem,
-} from '@heroui/react';
+import { Button, Dropdown, Input, Select, ListBox } from '@heroui/react';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { FilterDropdown } from './FilterDropdown';
 
 export type TransactionTableTopContentProps = {
   selectedYear: string;
   searchValue: string;
-  onYearChange: (year: string) => void;
+  onYearChange: (year: string | null) => void;
   onSearchChange: (search: string) => void;
   onDownloadClick: () => void;
   onFilterChange: (filters: Record<string, string[]>) => void;
@@ -35,36 +26,46 @@ export function TransactionTableTopContent({
   onFilterChange,
 }: TransactionTableTopContentProps) {
   return (
-    <section className="flex justify-between items-center p-6 border-b border-neutral-200">
+    <section className="flex justify-between items-center px-2 py-4 h-fit">
       <Input
-        className="max-w-xs"
-        size="sm"
+        className="w-sm shadow-none border border-neutral-200"
         placeholder="Search"
         value={searchValue}
-        onValueChange={onSearchChange}
+        onChange={(event) => onSearchChange(event.target.value)}
       />
       <div className="flex gap-4 items-center flex-1 justify-end">
         <Select
-          className="max-w-24 shrink-0"
-          size="sm"
-          items={YEAR_FILTER_OPTIONS}
-          selectedKeys={[selectedYear]}
-          onChange={(event) => onYearChange(event.target.value)}
+          className="shrink-0 w-32"
+          value={selectedYear}
+          onChange={(value) => (typeof value === 'string' ? onYearChange(value) : null)}
         >
-          {(year) => <SelectItem>{year.label}</SelectItem>}
+          <Select.Trigger className="shadow-none border border-neutral-200">
+            <Select.Value />
+            <Select.Indicator />
+          </Select.Trigger>
+          <Select.Popover>
+            <ListBox>
+              {YEAR_FILTER_OPTIONS.map(({ key, label }) => (
+                <ListBox.Item key={key} id={key}>
+                  <ListBox.ItemIndicator />
+                  {label}
+                </ListBox.Item>
+              ))}
+            </ListBox>
+          </Select.Popover>
         </Select>
         <FilterDropdown filters={{}} onFilterChange={onFilterChange} />
         <Dropdown>
-          <DropdownTrigger>
-            <Button isIconOnly size="sm" variant="light" color="primary">
-              <EllipsisVerticalIcon className="w-5 h-5" />
-            </Button>
-          </DropdownTrigger>
-          <DropdownMenu aria-label="Static Actions">
-            <DropdownItem key="download" onClick={onDownloadClick}>
-              Download
-            </DropdownItem>
-          </DropdownMenu>
+          <Button isIconOnly variant="ghost">
+            <EllipsisVerticalIcon className="w-5 h-5" />
+          </Button>
+          <Dropdown.Popover placement="bottom right">
+            <Dropdown.Menu aria-label="Static Actions">
+              <Dropdown.Item key="download" onClick={onDownloadClick}>
+                Download
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown.Popover>
         </Dropdown>
       </div>
     </section>

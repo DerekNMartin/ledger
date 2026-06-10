@@ -9,10 +9,10 @@
 
 import type { Transaction } from '@/lib/supabase/types';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { Button, Checkbox } from '@heroui/react';
+import { Button, Checkbox, Label } from '@heroui/react';
 
 import TransactionTable from '@/transactions/TransactionTable';
 import TransactionUpload from '@/transactions/new/TransactionUpload';
@@ -53,26 +53,37 @@ export default function TransactionsNew() {
   }
 
   return (
-    <main className="flex flex-col h-[calc(100vh-113px)] overflow-hidden">
-      <section className="flex justify-between items-center flex-none p-6 pt-0 border-b border-neutral-200">
-        <h2 className="font-bold text-2xl">Upload Transactions</h2>
+    <div className="flex flex-col h-full">
+      <section className="flex justify-between items-center flex-none py-6 pt-0">
+        <h2 className="font-semibold text-2xl">Upload Transactions</h2>
       </section>
-      <section className="flex flex-col gap-4 border-b border-neutral-200 p-6 flex-none">
+
+      <section className="flex gap-4 pb-6 flex-none justify-end">
         <TransactionUpload onUpload={setTransactionData} />
       </section>
-      <TransactionTable transactions={transactionData} onUpdateData={updateData} editable />
-      <section className="w-full flex justify-between items-center p-6 border-t border-neutral-200">
+
+      <Suspense fallback={<p>Unable to load transactions.</p>}>
+        <TransactionTable transactions={transactionData} onUpdateData={updateData} editable />
+      </Suspense>
+
+      <section className="w-full flex justify-between items-center py-6">
         <Checkbox
+          id="apply-similar"
           className="self-end"
           isSelected={enableApplyAll}
-          onValueChange={setEnableApplyAll}
+          onChange={setEnableApplyAll}
         >
-          Apply changes to similar transactions
+          <Checkbox.Control>
+            <Checkbox.Indicator />
+          </Checkbox.Control>
+          <Checkbox.Content>
+            <Label htmlFor="apply-similar">Apply changes to similar transactions</Label>
+          </Checkbox.Content>
         </Checkbox>
-        <Button color="primary" onPress={handleSaveTransactions} disabled={!transactionData}>
+        <Button variant="primary" onPress={handleSaveTransactions} isDisabled={!transactionData}>
           Save Transactions
         </Button>
       </section>
-    </main>
+    </div>
   );
 }

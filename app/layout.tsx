@@ -19,7 +19,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased">
         <Providers>
-          <header className="flex p-6 mb-6 border-b border-neutral-200 justify-between items-center">
+          <header className="flex p-4 mb-6 border-b border-neutral-200 justify-between items-center">
             <Link href={'/transactions'}>
               <h1 className="font-bold text-2xl my-1">Ledger</h1>
             </Link>

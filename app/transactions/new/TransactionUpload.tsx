@@ -3,7 +3,6 @@ import type { Transaction } from '@/lib/supabase/types';
 import { useRef, useState } from 'react';
 
 import { Button, Input } from '@heroui/react';
-import { useAccounts } from '@/lib/hooks/useAccounts';
 
 import AccountSelect from '@/lib/components/AccountSelect';
 
@@ -14,7 +13,6 @@ export default function TransactionUpload({
 }) {
   const fileInput = useRef<HTMLInputElement>(null);
   const [selectedAccount, setSelectedAccount] = useState<string>();
-  const { accounts } = useAccounts();
 
   function getFormDataFile() {
     if (!fileInput?.current?.files) throw new Error('No files provided');
@@ -54,7 +52,6 @@ export default function TransactionUpload({
   return (
     <div className="flex gap-2 w-full">
       <AccountSelect
-        accounts={accounts}
         className="w-xs"
         value={selectedAccount || ''}
         onChange={(selection) => setSelectedAccount(selection?.toString())}

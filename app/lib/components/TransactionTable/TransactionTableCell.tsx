@@ -4,9 +4,9 @@ import { Transaction } from '@/lib/supabase/types';
 import { Button, Input, Switch } from '@heroui/react';
 import CategorySelect, { CATEGORIES } from '@/lib/components/CategorySelect';
 import AccountSelect from '@/lib/components/AccountSelect';
+import { Account } from '@/lib/supabase/types';
 
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/outline';
-import { useAccounts } from '@/lib/hooks/useAccounts';
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(value);
@@ -49,6 +49,7 @@ export type TableCellProps = {
   transaction: Transaction;
   columnKey: React.Key;
   editable?: boolean;
+  accounts?: Account[];
   onUpdateData?: (rowData?: Partial<Transaction>) => void;
 };
 
@@ -56,9 +57,9 @@ export function TransactionTableCell({
   transaction,
   columnKey,
   editable,
+  accounts,
   onUpdateData,
 }: TableCellProps) {
-  const { accounts } = useAccounts();
   const cellValue = transaction[columnKey as keyof Transaction];
 
   function handleUpdateData(rowData?: Partial<Transaction>) {
@@ -71,7 +72,6 @@ export function TransactionTableCell({
     case 'account_id':
       return editable ? (
         <AccountSelect
-          accounts={accounts}
           isDisabled={!editable}
           value={transaction.account_id?.toString() || ''}
           onChange={(selection) => handleUpdateData({ account_id: Number(selection) })}

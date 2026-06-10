@@ -3,6 +3,7 @@ import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { TransactionsResponse } from '@/api/transactions/route';
 import { Table } from '@heroui/react';
 import { useMemo, useState, useCallback } from 'react';
+import { useAccounts } from '@/lib/hooks/useAccounts';
 
 import { TransactionTableBottomContent } from '@/lib/components/TransactionTable/BottomContent';
 import { TransactionTableTopContent } from '@/lib/components/TransactionTable/TopContent';
@@ -31,6 +32,8 @@ const columns: { name: string; id: keyof Partial<Transaction> }[] = [
 export default function TransactionTable(
   { transactions, editable, onUpdateData }: TransactionTableProps = { editable: false }
 ) {
+  const { accounts } = useAccounts();
+
   const [isDownload, setIsDownload] = useState(false);
   // Search
   const [searchValue, setSearchValue] = useState('');
@@ -222,6 +225,7 @@ export default function TransactionTable(
                         transaction={transaction}
                         columnKey={column.id}
                         editable={editable}
+                        accounts={accounts}
                         onUpdateData={(rowData) => handleUpdateData(transaction.id || '', rowData)}
                       />
                     </Table.Cell>

@@ -1,43 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import type { Account } from '@/lib/supabase/types';
-
-// TODO: Use tanstack query for data fetching and caching
-
-let cachedAccounts: Account[] | null = null;
-let fetching: Promise<Account[]> | null = null;
+import { useQuery } from '@tanstack/react-query';
 
 export function useAccounts() {
-  const [accounts, setAccounts] = useState<Account[] | null>(cachedAccounts);
-  const [error, setError] = useState<unknown>(null);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    if (cachedAccounts) return;
-
-    const fetchAccounts = async () => {
-      try {
-        if (!fetching) {
-          setIsLoading(true);
-          fetching = fetch('/api/accounts', { cache: 'force-cache' })
-            .then((res) => res.json())
-            .then((data: Account[]) => {
-              cachedAccounts = data;
-              return data;
-            });
-        }
-        const data = await fetching;
-        setAccounts(data);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchAccounts();
-  }, []);
+  const {
+    data: accounts,
+    error,
+    isLoading,
+  } = useQuery<Account[]>({
+    queryKey: ['accounts'],
+    queryFn: async () => {
+      const response = await fetch('/api/accounts');
+      return await response.json();
+    },
+  });
 
   return { accounts, error, isLoading };
 }

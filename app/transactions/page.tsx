@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import TransactionTable from '@/transactions/TransactionTable';
 import { Button } from '@heroui/react';
+import { Suspense } from 'react';
 
 export default function TransactionPage() {
   return (
@@ -17,7 +18,9 @@ export default function TransactionPage() {
         </Link>
       </section>
       <div className="flex-1 overflow-hidden flex flex-col">
-        <TransactionTable />
+        <Suspense fallback={<p>Unable to load transactions.</p>}>
+          <TransactionTable />
+        </Suspense>
       </div>
     </div>
   );

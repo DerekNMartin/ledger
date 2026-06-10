@@ -9,7 +9,7 @@
 
 import type { Transaction } from '@/lib/supabase/types';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { Button, Checkbox, Label } from '@heroui/react';
@@ -62,7 +62,9 @@ export default function TransactionsNew() {
         <TransactionUpload onUpload={setTransactionData} />
       </section>
 
-      <TransactionTable transactions={transactionData} onUpdateData={updateData} editable />
+      <Suspense fallback={<p>Unable to load transactions.</p>}>
+        <TransactionTable transactions={transactionData} onUpdateData={updateData} editable />
+      </Suspense>
 
       <section className="w-full flex justify-between items-center py-6">
         <Checkbox

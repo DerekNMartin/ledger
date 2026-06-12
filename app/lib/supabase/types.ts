@@ -12,6 +12,12 @@ export type TransactionInsert = TablesInsert<'Transactions'>;
 export type Account = Tables<'Accounts'>;
 
 // Insight Types
-export type InsightsCashFlowArgs = Database['public']['Functions']['get_monthly_expenses']['Args'];
-export type InsightsCashFlowReturns =
+export type InsightsMonthlyExpensesArgs =
+  Database['public']['Functions']['get_monthly_expenses']['Args'];
+export type InsightsMonthlyExpensesReturns =
   Database['public']['Functions']['get_monthly_expenses']['Returns'];
+
+export type InsightsCategoriesArgs =
+  Database['public']['Functions']['get_category_summary']['Args'];
+export type InsightsCategoriesReturns =
+  Database['public']['Functions']['get_category_summary']['Returns'];

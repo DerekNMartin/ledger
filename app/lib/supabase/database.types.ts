@@ -120,17 +120,20 @@ export type Database = {
       }
     }
     Views: {
-      monthly_financial_comparison: {
-        Row: {
-          monthly_net_cash_flow: number | null
-          period_start_date: string | null
-          total_monthly_expenses: number | null
-          total_monthly_income: number | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
+      get_category_summary: {
+        Args: {
+          account_filter?: number
+          end_date_filter: string
+          start_date_filter: string
+        }
+        Returns: {
+          category: string
+          total_spent: number
+        }[]
+      }
       get_monthly_expenses: {
         Args: {
           account_filter?: number

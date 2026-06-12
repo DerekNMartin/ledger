@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from '@heroui/react';
 import { useQuery } from '@tanstack/react-query';
-import { InsightsCashFlowResponse } from '@/api/insights/cash-flow/route';
+import { InsightsMonthlyExpensesResponse } from '@/api/insights/monthly-expenses/route';
 import { BarChart, Bar, XAxis, CartesianGrid, Tooltip, type TooltipContentProps } from 'recharts';
 import { useMemo } from 'react';
 
@@ -20,11 +20,11 @@ function formatDate(dateString: string, options?: Intl.DateTimeFormatOptions) {
 }
 
 export function MonthlyExpensesCard({ dateRange, accountFilter }: MonthlyExpensesCardProps) {
-  const { data: cashFlowResponse } = useQuery<InsightsCashFlowResponse>({
+  const { data: cashFlowResponse } = useQuery<InsightsMonthlyExpensesResponse>({
     queryKey: ['cashFlow', dateRange, accountFilter],
     queryFn: async () => {
       const baseUrl = window.location.origin;
-      const url = new URL('/api/insights/cash-flow', baseUrl);
+      const url = new URL('/api/insights/monthly-expenses', baseUrl);
       url.searchParams.append('start_date', dateRange.start);
       url.searchParams.append('end_date', dateRange.end);
       if (accountFilter) url.searchParams.append('account_id', accountFilter);
@@ -47,14 +47,14 @@ export function MonthlyExpensesCard({ dateRange, accountFilter }: MonthlyExpense
   }, [cashFlowResponse]);
 
   return (
-    <Card className="w-fit border border-violet-200 shadow-none rounded-2xl">
+    <Card className="w-fit border border-violet-200 shadow-none rounded-2xl max-h-100">
       <CardHeader className="mb-4">
         <h3 className="font-medium">Monthly Expenses</h3>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex min-w-lg">
         <BarChart
           width={'100%'}
-          height={300}
+          height={'100%'}
           responsive
           data={barChartExpensesData}
           className="cn-chart flex aspect-video justify-center text-xs [&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-border/50 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-dot[stroke='#fff']]:stroke-transparent [&_.recharts-layer]:outline-hidden [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-violet-100 [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border [&_.recharts-sector]:outline-hidden [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-surface]:outline-hidden"

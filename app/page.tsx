@@ -10,6 +10,7 @@ import AccountSelect from '@/lib/components/AccountSelect';
 import { useUrlState } from '@/lib/hooks/useUrlState';
 import { TransactionsSummary } from '@/lib/components/TransactionTable/TransactionsSummary';
 import { MonthlyExpensesCard } from '@/lib/components/Dashboard/MonthlyExpensesCard';
+import { CategorySummaryCard } from '@/lib/components/Dashboard/CategorySummaryCard';
 
 export default function Home() {
   const [filterYear, setFilterYear] = useUrlState('year', '2025');
@@ -52,7 +53,10 @@ export default function Home() {
       {transactionResponse?.summary && (
         <TransactionsSummary summary={transactionResponse.summary} />
       )}
-      <MonthlyExpensesCard dateRange={filterDateRange} accountFilter={selectedAccount} />
+      <div className="flex gap-4">
+        <MonthlyExpensesCard dateRange={filterDateRange} accountFilter={selectedAccount} />
+        <CategorySummaryCard dateRange={filterDateRange} accountFilter={selectedAccount} />
+      </div>
     </main>
   );
 }

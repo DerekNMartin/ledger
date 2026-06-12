@@ -56,7 +56,7 @@ export function TransactionTableBottomContent({
             value={perPage}
             onChange={(value) => (typeof value === 'string' ? onPerPageChange(value) : null)}
           >
-            <Select.Trigger className="rounded-lg shadow-none border border-neutral-200 w-20">
+            <Select.Trigger className="rounded-lg shadow-none border border-violet-200 w-20">
               <Select.Value />
               <Select.Indicator />
             </Select.Trigger>

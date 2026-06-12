@@ -21,7 +21,7 @@ export function YearSelect({ selectedYear, onYearChange }: YearSelectProps) {
       onChange={(value) => (typeof value === 'string' ? onYearChange(value) : null)}
       aria-label="Year Filter Selection"
     >
-      <Select.Trigger className="shadow-none border border-neutral-200">
+      <Select.Trigger className="shadow-none border border-violet-200">
         <Select.Value />
         <Select.Indicator />
       </Select.Trigger>

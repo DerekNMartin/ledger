@@ -58,10 +58,10 @@ export function TransactionsSummary({ summary }: TransactionsSummaryProps) {
         Object.values(summaryData).map((data) => (
           <Card
             key={data.label}
-            className="flex-1 p-3 border-neutral-200 border gap-3 shrink-0 shadow-none rounded-2xl"
+            className="flex-1 p-3 border-violet-200 border gap-3 shrink-0 shadow-none rounded-2xl"
           >
             <div className="flex gap-2 items-center">
-              <span className="bg-violet-50 rounded-xl p-3 w-fit">
+              <span className="bg-violet-100 rounded-xl p-3 w-fit">
                 <data.icon className="w-4 h-4 shrink-0 text-violet-600" strokeWidth={2} />
               </span>
               <div className="text-neutral-500 text-sm font-medium">{data.label}</div>

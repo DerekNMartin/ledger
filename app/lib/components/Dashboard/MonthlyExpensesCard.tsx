@@ -47,7 +47,7 @@ export function MonthlyExpensesCard({ dateRange, accountFilter }: MonthlyExpense
   }, [cashFlowResponse]);
 
   return (
-    <Card className="w-fit border border-neutral-200 shadow-none rounded-2xl">
+    <Card className="w-fit border border-violet-200 shadow-none rounded-2xl">
       <CardHeader className="mb-4">
         <h3 className="font-medium">Monthly Expenses</h3>
       </CardHeader>
@@ -85,7 +85,7 @@ const CustomTooltip = ({ active, payload, label }: TooltipContentProps) => {
   }).format(Number(firstPayload?.value || 0));
   return (
     <div
-      className="bg-white border border-neutral-200 rounded-lg p-2 flex items-center gap-8"
+      className="bg-white border border-violet-200 rounded-lg p-2 flex items-center gap-8"
       style={{ visibility: isVisible ? 'visible' : 'hidden' }}
     >
       {isVisible && (

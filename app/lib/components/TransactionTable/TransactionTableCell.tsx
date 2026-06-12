@@ -83,7 +83,7 @@ export function TransactionTableCell({
       return editable ? (
         <Input
           key={transaction.name || transaction.id} // Ensure input is re-rendered when name changes
-          className="min-w-44 shadow-none border border-neutral-200"
+          className="min-w-44 shadow-none border border-violet-200"
           placeholder="Transaction name"
           defaultValue={transaction.name || ''}
           onBlur={(event) => {

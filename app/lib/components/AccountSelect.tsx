@@ -7,7 +7,7 @@ export default function AccountSelect(props: Omit<SelectProps<Account, 'single'>
 
   return (
     <Select {...props} aria-label="Account Selection" placeholder="Choose an account...">
-      <Select.Trigger className={'shadow-none border border-neutral-200'}>
+      <Select.Trigger className={'shadow-none border border-violet-200'}>
         <Select.Value />
         <Select.Indicator />
       </Select.Trigger>

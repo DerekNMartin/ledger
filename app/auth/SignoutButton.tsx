@@ -14,7 +14,7 @@ export default function SignoutButton() {
   }
 
   return isAuth ? (
-    <Button variant="tertiary" onPress={handleSignOut}>
+    <Button variant="tertiary" onPress={handleSignOut} className={'bg-violet-100'}>
       Sign Out
     </Button>
   ) : null;

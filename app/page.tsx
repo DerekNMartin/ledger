@@ -33,7 +33,7 @@ export default function Home() {
   });
 
   return (
-    <main className="flex flex-col h-[calc(100vh-97px)] max-w-7xl mx-auto p-6 xl:p-0 gap-8">
+    <main className="flex flex-col h-full max-w-7xl mx-auto p-6 xl:p-0 gap-8">
       <section className="flex justify-between items-end">
         <h2 className="font-semibold text-2xl">Hello Derek!</h2>
         <div className="flex gap-2">

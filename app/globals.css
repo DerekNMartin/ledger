@@ -103,7 +103,7 @@
  }
 
 :root {
-  --background: #ffffff;
+  --background: var(--color-violet-50);
   --foreground: #171717;
 }
 

@@ -23,7 +23,7 @@ export function TransactionTableTopContent({
   return (
     <section className="flex justify-between items-center px-2 py-4 h-fit">
       <Input
-        className="w-sm shadow-none border border-neutral-200"
+        className="w-sm shadow-none border border-violet-200"
         placeholder="Search"
         aria-label="Search Transactions Input"
         value={searchValue}

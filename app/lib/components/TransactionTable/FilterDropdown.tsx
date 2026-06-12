@@ -22,7 +22,7 @@ export function FilterDropdown({ onFilterChange }: FilterDropdownProps) {
     <Dropdown>
       <Button
         variant="outline"
-        className="rounded-lg border-neutral-200 bg-white hover:bg-neutral-100"
+        className="rounded-lg border-violet-200 bg-white hover:bg-neutral-100"
       >
         <FunnelIcon className="w-4 h-4" />
         Filter

@@ -24,7 +24,7 @@ export default function CategorySelect(
 ) {
   return (
     <Select {...props} aria-label="Category Selection" variant="primary">
-      <Select.Trigger className={'shadow-none border border-neutral-200'}>
+      <Select.Trigger className={'shadow-none border border-violet-200'}>
         <Select.Value />
         <Select.Indicator />
       </Select.Trigger>

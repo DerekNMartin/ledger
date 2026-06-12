@@ -1,3 +1,5 @@
+'use client';
+
 import type { Transaction } from '@/lib/supabase/types';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { TransactionsResponse } from '@/api/transactions/route';
@@ -178,7 +180,7 @@ export default function TransactionTable(
       )}
       <Table
         aria-label="Transaction Data Table"
-        className="flex flex-col w-full flex-1 min-h-0 h-full bg-neutral-100"
+        className="flex flex-col w-full flex-1 min-h-0 h-full bg-violet-100"
       >
         <TransactionTableTopContent
           selectedYear={filterYear}
@@ -192,7 +194,7 @@ export default function TransactionTable(
         />
         <Table.ScrollContainer className={'flex-1'}>
           <Table.Content className="h-full">
-            <Table.Header columns={columns} className={'bg-neutral-100 sticky top-0 z-10'}>
+            <Table.Header columns={columns} className={'bg-violet-100 sticky top-0 z-10'}>
               {(column) => (
                 <Table.Column
                   isRowHeader={true}

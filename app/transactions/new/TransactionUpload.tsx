@@ -57,7 +57,7 @@ export default function TransactionUpload({
         onChange={(selection) => setSelectedAccount(selection?.toString())}
       />
       <Input
-        className={'flex-1 shadow-none border border-neutral-200'}
+        className={'flex-1 shadow-none border border-violet-200'}
         ref={fileInput}
         multiple
         type="file"

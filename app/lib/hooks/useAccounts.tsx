@@ -14,6 +14,7 @@ export function useAccounts() {
       const response = await fetch('/api/accounts');
       return await response.json();
     },
+    refetchOnWindowFocus: false,
   });
 
   return { accounts, error, isLoading };

@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.1"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -120,10 +120,28 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      monthly_financial_comparison: {
+        Row: {
+          monthly_net_cash_flow: number | null
+          period_start_date: string | null
+          total_monthly_expenses: number | null
+          total_monthly_income: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      get_monthly_expenses: {
+        Args: {
+          account_filter?: number
+          end_date_filter: string
+          start_date_filter: string
+        }
+        Returns: {
+          period_start_date: string
+          total_monthly_expenses: number
+        }[]
+      }
     }
     Enums: {
       account_types: "chequing" | "savings" | "investment" | "cc"

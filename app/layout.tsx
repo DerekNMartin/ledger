@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import '@/globals.css';
 import { Providers } from '@/providers';
+import { Inter } from 'next/font/google';
 
 import { RootHeader } from '@/lib/components/Root/RootHeader';
 
@@ -9,13 +10,15 @@ export const metadata: Metadata = {
   description: 'Personal ledger of finances.',
 };
 
+const interFont = Inter({ variable: '--font-inter' });
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${interFont.variable} antialiased`}>
       <body className="antialiased">
         <Providers>
           <RootHeader />

@@ -180,7 +180,7 @@ export default function TransactionTable(
       )}
       <Table
         aria-label="Transaction Data Table"
-        className="flex flex-col w-full flex-1 min-h-0 h-full bg-violet-100"
+        className="flex flex-col w-full flex-1 min-h-0 h-full bg-violet-100 border border-violet-200"
       >
         <TransactionTableTopContent
           selectedYear={filterYear}

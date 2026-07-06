@@ -86,7 +86,11 @@ export function TransactionTableBottomContent({
               </Pagination.Item>
             ) : (
               <Pagination.Item key={p}>
-                <Pagination.Link isActive={p === currentPage} onPress={() => onPageChange(p)}>
+                <Pagination.Link
+                  isActive={p === currentPage}
+                  onPress={() => onPageChange(p)}
+                  className={p === currentPage ? 'bg-violet-200' : ''}
+                >
                   {p}
                 </Pagination.Link>
               </Pagination.Item>

@@ -14,7 +14,7 @@ import { CategorySummaryCard } from '@/lib/components/Dashboard/CategorySummaryC
 import { PrivacyButton } from '@/lib/components/PrivacyButton';
 
 export default function Home() {
-  const [filterYear, setFilterYear] = useUrlState('year', '2025');
+  const [filterYear, setFilterYear] = useUrlState('year', '2026');
   const [selectedAccount, setSelectedAccount] = useState<string>();
 
   const filterDateRange = {

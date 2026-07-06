@@ -60,10 +60,11 @@ function findKey(
   keyType: 'date' | 'amount' | 'description',
   rowItem: Record<string, string | number | boolean>
 ) {
+  // Possible column variants of the uploaded CSV
   const colHeaderVariants = {
-    date: ['date', 'transaction date'],
+    date: ['date', 'transaction date', 'transaction_date'],
     amount: ['amount', 'cad$'],
-    description: ['description', 'description 1'],
+    description: ['description', 'description 1', 'merchant'],
   };
   return Object.keys(rowItem).find((key) =>
     colHeaderVariants[keyType].includes(key.toLowerCase())

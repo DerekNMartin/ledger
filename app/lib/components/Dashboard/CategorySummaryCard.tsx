@@ -1,9 +1,11 @@
 import { Card, CardContent, CardHeader } from '@heroui/react';
 import { useQuery } from '@tanstack/react-query';
 import { InsightsCategorySummaryResponse } from '@/api/insights/category-summary/route';
-import { Pie, PieChart, Tooltip, type TooltipContentProps } from 'recharts';
+import { Pie, PieChart, PieSectorDataItem, Tooltip, type TooltipContentProps } from 'recharts';
 import { useMemo } from 'react';
 import { usePrivacyMode } from '@/lib/context/usePrivacyMode';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { CATEGORY_FILTER_KEY } from '@/lib/constants/UrlParamKeys';
 
 const COLOURS = [
   'var(--color-violet-600)',
@@ -29,6 +31,8 @@ type CategorySummaryCardProps = {
 };
 
 export function CategorySummaryCard({ dateRange, accountFilter }: CategorySummaryCardProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const privacyModeContext = usePrivacyMode();
 
   const { data: summaryResponse } = useQuery<InsightsCategorySummaryResponse>({
@@ -51,6 +55,14 @@ export function CategorySummaryCard({ dateRange, accountFilter }: CategorySummar
     });
   }, [summaryResponse]);
 
+  /** Navigates to the transactions list, filtered by the clicked category. */
+  function handlePieClick(data: PieSectorDataItem) {
+    if (!data.name) return;
+    const params = new URLSearchParams(searchParams.toString());
+    params.append(CATEGORY_FILTER_KEY, data.name);
+    router.push(`/transactions?${params.toString()}`);
+  }
+
   return (
     <Card className="border border-violet-200 shadow-none rounded-2xl w-full">
       <CardHeader className="mb-4">
@@ -69,7 +81,7 @@ export function CategorySummaryCard({ dateRange, accountFilter }: CategorySummar
             left: 0,
           }}
         >
-          <Pie data={summaryData} dataKey="value" nameKey="label" />
+          <Pie data={summaryData} dataKey="value" nameKey="label" onClick={handlePieClick} />
           <Tooltip content={CustomTooltip} />
         </PieChart>
         <div className="flex flex-col gap-2">

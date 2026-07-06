@@ -14,6 +14,7 @@ import { TransactionTableCell } from '@/lib/components/TransactionTable/Transact
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import { useUrlState } from '@/lib/hooks/useUrlState';
 import { TransactionsSummary } from '@/lib/components/TransactionTable/TransactionsSummary';
+import { CATEGORY_FILTER_KEY } from '@/lib/constants/UrlParamKeys';
 
 export type TransactionTableProps = {
   editable?: boolean;
@@ -44,9 +45,9 @@ export default function TransactionTable(
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState('25');
   // Year Filter
-  const [filterYear, setFilterYear] = useUrlState('year', '2025');
+  const [filterYear, setFilterYear] = useUrlState('year', '2026');
   // Category Filter
-  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
+  const [categoryFilter, setCategoryFilter] = useUrlState(CATEGORY_FILTER_KEY, '');
 
   const filterDateRange = useMemo(() => {
     return {
@@ -61,7 +62,7 @@ export default function TransactionTable(
       const url = new URL('/api/transactions', baseUrl);
       if (searchValue) url.searchParams.append('search', debouncedSearch);
       if (isDownload) url.searchParams.append('download', 'true');
-      if (categoryFilter.length > 0) url.searchParams.append('category', categoryFilter.join(','));
+      if (categoryFilter.length > 0) url.searchParams.append(CATEGORY_FILTER_KEY, categoryFilter);
       url.searchParams.append('page', currentPage.toString());
       url.searchParams.append('page_size', perPage);
       url.searchParams.append('start_date', filterDateRange.start);
@@ -162,14 +163,14 @@ export default function TransactionTable(
   function handleFilterChange(filters: Record<string, string[]>) {
     // Currently only category filter is implemented
     // Can be extended to other filters as needed
-    const categoryFilters = filters['category'] || [];
-    if (categoryFilters.length > 0) {
-      setCategoryFilter(categoryFilters);
+    const categoryFilters = filters['category'] || null;
+    if (categoryFilters) {
+      setCategoryFilter(categoryFilters.join(','));
       // Note: This filtering does not affect pagination in editable mode
       // For simplicity, we just update the current page to 1
       setCurrentPage(1);
     } else {
-      setCategoryFilter([]);
+      setCategoryFilter('');
     }
   }
 
@@ -212,7 +213,7 @@ export default function TransactionTable(
               renderEmptyState={() => (
                 <div className="flex justify-center items-center">
                   <p>
-                    {searchValue || categoryFilter.length > 0
+                    {searchValue || categoryFilter
                       ? 'No matching transactions found.'
                       : 'Upload your trasactions to view and modify them.'}
                   </p>

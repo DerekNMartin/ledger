@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import '@/globals.css';
 import { Providers } from '@/providers';
-import { Inter } from 'next/font/google';
+import { Jost } from 'next/font/google';
 
 import { RootHeader } from '@/lib/components/Root/RootHeader';
 
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: 'Personal ledger of finances.',
 };
 
-const interFont = Inter({ variable: '--font-inter' });
+const interFont = Jost({ variable: '--font-inter' });
 
 export default function RootLayout({
   children,

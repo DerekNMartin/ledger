@@ -134,3 +134,8 @@ body {
   scrollbar-color: var(--color-neutral-300) white;
   scrollbar-width: thin;
 }
+
+/* Turns the text inside into bullet points */
+.hidden-digits {
+  -webkit-text-security: disc; /* Options: disc, circle, square */
+}

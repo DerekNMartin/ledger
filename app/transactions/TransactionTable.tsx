@@ -174,7 +174,7 @@ export default function TransactionTable(
   }
 
   return (
-    <>
+    <div className="flex flex-col h-full gap-8">
       {transactionResponse && !editable && (
         <TransactionsSummary summary={transactionResponse?.summary} />
       )}
@@ -248,6 +248,6 @@ export default function TransactionTable(
           />
         </Table.Footer>
       </Table>
-    </>
+    </div>
   );
 }

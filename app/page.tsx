@@ -11,6 +11,7 @@ import { useUrlState } from '@/lib/hooks/useUrlState';
 import { TransactionsSummary } from '@/lib/components/TransactionTable/TransactionsSummary';
 import { MonthlyExpensesCard } from '@/lib/components/Dashboard/MonthlyExpensesCard';
 import { CategorySummaryCard } from '@/lib/components/Dashboard/CategorySummaryCard';
+import { PrivacyButton } from '@/lib/components/PrivacyButton';
 
 export default function Home() {
   const [filterYear, setFilterYear] = useUrlState('year', '2025');
@@ -38,6 +39,7 @@ export default function Home() {
       <section className="flex justify-between items-end">
         <h2 className="font-semibold text-2xl">Hello Derek!</h2>
         <div className="flex gap-2">
+          <PrivacyButton />
           <YearSelect
             selectedYear={filterYear}
             onYearChange={(year) => (year ? setFilterYear(year) : null)}

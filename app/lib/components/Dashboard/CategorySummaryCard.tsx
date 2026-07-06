@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { InsightsCategorySummaryResponse } from '@/api/insights/category-summary/route';
 import { Pie, PieChart, Tooltip, type TooltipContentProps } from 'recharts';
 import { useMemo } from 'react';
+import { usePrivacyMode } from '@/lib/context/usePrivacyMode';
 
 const COLOURS = [
   'var(--color-violet-600)',
@@ -28,6 +29,8 @@ type CategorySummaryCardProps = {
 };
 
 export function CategorySummaryCard({ dateRange, accountFilter }: CategorySummaryCardProps) {
+  const privacyModeContext = usePrivacyMode();
+
   const { data: summaryResponse } = useQuery<InsightsCategorySummaryResponse>({
     queryKey: ['categorySummary', dateRange, accountFilter],
     queryFn: async () => {
@@ -83,7 +86,13 @@ export function CategorySummaryCard({ dateRange, accountFilter }: CategorySummar
                     {entry.label.replace('_', ' ')}
                   </p>
                 </span>
-                <p className="text-sm font-semibold">{dollarAmount}</p>
+                <p
+                  className={`text-sm font-semibold ${
+                    privacyModeContext.privacyModeEnabled ? 'hidden-digits' : null
+                  }`}
+                >
+                  {dollarAmount}
+                </p>
               </div>
             );
           })}

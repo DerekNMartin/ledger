@@ -9,12 +9,15 @@ import {
   WalletIcon,
 } from '@heroicons/react/24/outline';
 import { useMemo } from 'react';
+import { usePrivacyMode } from '@/lib/context/usePrivacyMode';
 
 export type TransactionsSummaryProps = {
   summary?: TransactionSummary;
 };
 
 export function TransactionsSummary({ summary }: TransactionsSummaryProps) {
+  const privacyModeContext = usePrivacyMode();
+
   // Summary Card Data
   const summaryData = useMemo(() => {
     if (!summary) return null;
@@ -52,8 +55,18 @@ export function TransactionsSummary({ summary }: TransactionsSummaryProps) {
     };
   }, [summary]);
 
+  function transactionValue(value: string | number) {
+    if (privacyModeContext.privacyModeEnabled) return '0123456789';
+    return typeof value === 'number'
+      ? value.toLocaleString('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        })
+      : value;
+  }
+
   return (
-    <section className="grid grid-cols-3 grid-rows-2 gap-4 py-8 pt-0 flex-wrap">
+    <section className="grid grid-cols-3 grid-rows-2 gap-4 flex-wrap">
       {summaryData &&
         Object.values(summaryData).map((data) => (
           <Card
@@ -70,13 +83,12 @@ export function TransactionsSummary({ summary }: TransactionsSummaryProps) {
             </div>
 
             {/* Value */}
-            <div className="text-xl font-semibold capitalize">
-              {typeof data.value === 'number'
-                ? data.value.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                  })
-                : data.value}
+            <div
+              className={`text-xl font-semibold capitalize ${
+                privacyModeContext.privacyModeEnabled ? 'hidden-digits' : null
+              }`}
+            >
+              {transactionValue(data.value)}
             </div>
           </Card>
         ))}

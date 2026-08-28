@@ -13,11 +13,13 @@ export async function GET(request: NextRequest) {
   const accountIdFilter = searchParameters.get('account_id');
   const startDate = searchParameters.get('start_date');
   const endDate = searchParameters.get('end_date');
+  const categoryFilter = searchParameters.get('category');
 
   const { data: monthlyExpensesData, error } = await supabase.rpc('get_monthly_expenses', {
-    account_filter: accountIdFilter ? Number(accountIdFilter) : undefined,
     start_date_filter: startDate || '',
     end_date_filter: endDate || '',
+    account_filter: accountIdFilter ? Number(accountIdFilter) : undefined,
+    category_filter: categoryFilter ? categoryFilter : undefined,
   });
 
   if (error) {

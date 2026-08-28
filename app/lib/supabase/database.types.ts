@@ -137,6 +137,18 @@ export type Database = {
       get_monthly_expenses: {
         Args: {
           account_filter?: number
+          category_filter?: string
+          end_date_filter: string
+          start_date_filter: string
+        }
+        Returns: {
+          period_start_date: string
+          total_monthly_expenses: number
+        }[]
+      }
+      get_monthly_expenses_old: {
+        Args: {
+          account_filter?: number
           end_date_filter: string
           start_date_filter: string
         }

@@ -2,7 +2,8 @@ import { Card, CardContent, CardHeader } from '@heroui/react';
 import { useQuery } from '@tanstack/react-query';
 import { InsightsMonthlyExpensesResponse } from '@/api/insights/monthly-expenses/route';
 import { BarChart, Bar, XAxis, CartesianGrid, Tooltip, type TooltipContentProps } from 'recharts';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import CategorySelect from '@/lib/components/CategorySelect';
 
 type MonthlyExpensesCardProps = {
   /** The account ID to filter by. */
@@ -20,21 +21,25 @@ function formatDate(dateString: string, options?: Intl.DateTimeFormatOptions) {
 }
 
 export function MonthlyExpensesCard({ dateRange, accountFilter }: MonthlyExpensesCardProps) {
+  const [categoryFilter, setCategoryFilter] = useState('');
+
   const { data: cashFlowResponse } = useQuery<InsightsMonthlyExpensesResponse>({
-    queryKey: ['cashFlow', dateRange, accountFilter],
+    queryKey: ['cashFlow', dateRange, accountFilter, categoryFilter],
     queryFn: async () => {
       const baseUrl = window.location.origin;
       const url = new URL('/api/insights/monthly-expenses', baseUrl);
       url.searchParams.append('start_date', dateRange.start);
       url.searchParams.append('end_date', dateRange.end);
       if (accountFilter) url.searchParams.append('account_id', accountFilter);
+      if (categoryFilter) url.searchParams.append('category', categoryFilter);
       const response = await fetch(url.href);
       return response.json();
     },
   });
 
   const barChartExpensesData = useMemo(() => {
-    return cashFlowResponse?.data
+    if (!cashFlowResponse?.data) return;
+    return cashFlowResponse.data
       .map((entry) => {
         return { date: entry.period_start_date, amount: entry.total_monthly_expenses };
       })
@@ -48,8 +53,14 @@ export function MonthlyExpensesCard({ dateRange, accountFilter }: MonthlyExpense
 
   return (
     <Card className="w-fit border border-violet-200 shadow-none rounded-2xl max-h-100">
-      <CardHeader className="mb-4">
+      <CardHeader className="mb-4 flex flex-row justify-between">
         <h3 className="font-medium">Monthly Expenses</h3>
+        <CategorySelect
+          value={categoryFilter}
+          onChange={(selection) =>
+            typeof selection === 'string' ? setCategoryFilter(selection) : null
+          }
+        />
       </CardHeader>
       <CardContent className="flex min-w-lg">
         <BarChart

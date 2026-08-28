@@ -23,7 +23,7 @@ export default function CategorySelect(
   props: Omit<SelectProps<(typeof CATEGORIES)[0]>, 'children'>
 ) {
   return (
-    <Select {...props} aria-label="Category Selection" variant="primary">
+    <Select {...props} aria-label="Category Selection" variant="primary" placeholder="Category...">
       <Select.Trigger className={'shadow-none border border-violet-200'}>
         <Select.Value />
         <Select.Indicator />

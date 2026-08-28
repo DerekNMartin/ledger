@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: 'Personal ledger of finances.',
 };
 
-const interFont = Jost({ variable: '--font-inter' });
+const customFont = Jost({ variable: '--font-inter', subsets: ['latin'] });
 
 export default function RootLayout({
   children,
@@ -18,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${interFont.variable} antialiased`}>
+    <html lang="en" className={`${customFont.variable} antialiased`}>
       <body className="antialiased">
         <Providers>
           <RootHeader />

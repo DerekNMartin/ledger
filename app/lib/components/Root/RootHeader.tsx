@@ -1,6 +1,10 @@
+'use client';
+
 import SignoutButton from '@/auth/SignoutButton';
 import Link from 'next/link';
 import { Tabs } from '@heroui/react';
+import { usePathname } from 'next/navigation';
+import { useMemo } from 'react';
 
 const menuOptions = [
   {
@@ -16,12 +20,19 @@ const menuOptions = [
 ];
 
 export function RootHeader() {
+  const pathname = usePathname();
+
+  const currentKey = useMemo(() => {
+    const [dashboardTab, transactionsTab] = menuOptions;
+    return pathname.includes('transactions') ? transactionsTab.id : dashboardTab.id;
+  }, [pathname]);
+
   return (
     <header className="flex p-6 mb-6 justify-between items-center">
       <Link href={'/'}>
         <h1 className="font-bold text-2xl my-1">Ledger</h1>
       </Link>
-      <Tabs>
+      <Tabs selectedKey={currentKey}>
         <Tabs.ListContainer>
           <Tabs.List aria-label="Root Menu Tab Options" className="bg-violet-100">
             {menuOptions.map((option) => {

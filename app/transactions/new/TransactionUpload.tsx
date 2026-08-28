@@ -66,7 +66,7 @@ export default function TransactionUpload({
       />
       <Button
         onPress={uploadFile}
-        variant="primary"
+        variant="secondary"
         isPending={isLoading}
         isDisabled={!selectedAccount}
       >

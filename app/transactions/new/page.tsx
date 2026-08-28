@@ -62,10 +62,6 @@ export default function TransactionsNew() {
         <TransactionUpload onUpload={setTransactionData} />
       </section>
 
-      <Suspense fallback={<p>Unable to load transactions.</p>}>
-        <TransactionTable transactions={transactionData} onUpdateData={updateData} editable />
-      </Suspense>
-
       <section className="w-full flex justify-between items-center py-6">
         <Checkbox
           id="apply-similar"
@@ -83,6 +79,12 @@ export default function TransactionsNew() {
         <Button variant="primary" onPress={handleSaveTransactions} isDisabled={!transactionData}>
           Save Transactions
         </Button>
+      </section>
+
+      <section className="h-full pb-8">
+        <Suspense fallback={<p>Unable to load transactions.</p>}>
+          <TransactionTable transactions={transactionData} onUpdateData={updateData} editable />
+        </Suspense>
       </section>
     </div>
   );

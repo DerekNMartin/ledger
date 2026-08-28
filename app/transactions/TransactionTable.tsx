@@ -99,6 +99,7 @@ export default function TransactionTable(
       debouncedSearch,
       isDownload,
       categoryFilter,
+      editable,
     ],
     queryFn: fetchTransactions,
     enabled: !editable,

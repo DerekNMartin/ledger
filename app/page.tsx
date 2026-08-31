@@ -52,9 +52,7 @@ export default function Home() {
           />
         </div>
       </section>
-      {transactionResponse?.summary && (
-        <TransactionsSummary summary={transactionResponse.summary} />
-      )}
+      <TransactionsSummary summary={transactionResponse?.summary} />
       <div className="flex gap-4">
         <MonthlyExpensesCard dateRange={filterDateRange} accountFilter={selectedAccount} />
         <CategorySummaryCard dateRange={filterDateRange} accountFilter={selectedAccount} />

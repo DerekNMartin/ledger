@@ -20,37 +20,36 @@ export function TransactionsSummary({ summary }: TransactionsSummaryProps) {
 
   // Summary Card Data
   const summaryData = useMemo(() => {
-    if (!summary) return null;
     return {
       totalSpent: {
         label: 'Expenses',
         icon: ArrowUpTrayIcon,
-        value: summary.totalSpent || 0,
+        value: summary?.totalSpent || 0,
       },
       totalIncome: {
         label: 'Income',
         icon: ArrowDownTrayIcon,
-        value: summary.totalIncome || 0,
+        value: summary?.totalIncome || 0,
       },
       netCashFlow: {
         label: 'Profit',
         icon: WalletIcon,
-        value: summary.netCashFlow || 0,
+        value: summary?.netCashFlow || 0,
       },
       fixedCosts: {
         label: 'Recurring',
         icon: ArrowPathIcon,
-        value: summary.fixedCosts || 0,
+        value: summary?.fixedCosts || 0,
       },
       variableCosts: {
         label: 'Variable',
         icon: CreditCardIcon,
-        value: summary.variableCosts || 0,
+        value: summary?.variableCosts || 0,
       },
       topCategory: {
         label: 'Top Category',
         icon: TagIcon,
-        value: summary.topCategory || 'N/A',
+        value: summary?.topCategory || 'N/A',
       },
     };
   }, [summary]);
@@ -88,7 +87,7 @@ export function TransactionsSummary({ summary }: TransactionsSummaryProps) {
                 privacyModeContext.privacyModeEnabled ? 'hidden-digits' : null
               }`}
             >
-              {transactionValue(data.value)}
+              {data.value ? transactionValue(data.value) : '-'}
             </div>
           </Card>
         ))}

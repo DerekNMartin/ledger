@@ -177,9 +177,7 @@ export default function TransactionTable(
 
   return (
     <div className="flex flex-col h-full gap-8">
-      {transactionResponse && !editable && (
-        <TransactionsSummary summary={transactionResponse?.summary} />
-      )}
+      {!editable && <TransactionsSummary summary={transactionResponse?.summary} />}
       <Table
         aria-label="Transaction Data Table"
         className="flex flex-col w-full flex-1 min-h-0 h-full bg-violet-100 border border-violet-200"

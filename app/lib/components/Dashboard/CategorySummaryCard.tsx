@@ -1,3 +1,5 @@
+'use client';
+
 import { Card, CardContent, CardHeader } from '@heroui/react';
 import { useQuery } from '@tanstack/react-query';
 import { InsightsCategorySummaryResponse } from '@/api/insights/category-summary/route';

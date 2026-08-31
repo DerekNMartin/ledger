@@ -4,6 +4,7 @@ import { Providers } from '@/providers';
 import { Jost } from 'next/font/google';
 
 import { RootHeader } from '@/lib/components/Root/RootHeader';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
   title: 'Ledger',
@@ -22,7 +23,7 @@ export default function RootLayout({
       <body className="antialiased">
         <Providers>
           <RootHeader />
-          {children}
+          <Suspense fallback={<p>Yikes! Something bad happened!</p>}>{children}</Suspense>
         </Providers>
       </body>
     </html>
